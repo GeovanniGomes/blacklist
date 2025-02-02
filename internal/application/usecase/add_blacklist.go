@@ -33,7 +33,7 @@ func (c *UsecaseAddBlacklist)Execute(user_identifier int, eventId, reason, docum
 	if err != nil {
 		return &blacklistEmpty, err
 	}
-	err = c.blacklist_repository.Add(*blacklist)
+	err = c.blacklist_repository.Add(blacklist)
 	if err != nil{
 		return &blacklistEmpty, err
 	}

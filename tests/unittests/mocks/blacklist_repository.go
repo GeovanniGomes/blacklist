@@ -35,7 +35,7 @@ func (m *MockBlackListRepositoryInterface) EXPECT() *MockBlackListRepositoryInte
 }
 
 // Add mocks base method.
-func (m *MockBlackListRepositoryInterface) Add(blacklist entity.BlackList) error {
+func (m *MockBlackListRepositoryInterface) Add(blacklist *entity.BlackList) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Add", blacklist)
 	ret0, _ := ret[0].(error)

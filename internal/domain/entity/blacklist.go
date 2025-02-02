@@ -24,7 +24,7 @@ type BlackList struct {
 	scope          string
 	userIdentifier int
 	blockedUntil   *time.Time
-	blockedYype    string
+	blockedType    string
 }
 
 func NewBlackList(enventId, reason, document, scope, blockedType string, userIdentifier int ,blockedUntil *time.Time) *BlackList {
@@ -38,7 +38,7 @@ func NewBlackList(enventId, reason, document, scope, blockedType string, userIde
 		createdAt:      time.Now(),
 		userIdentifier: userIdentifier,
 		blockedUntil:   blockedUntil,
-		blockedYype:    blockedType,
+		blockedType:    blockedType,
 	}
 }
 
@@ -53,10 +53,10 @@ func (blackList *BlackList) IsValid() error {
 	if blackList.scope != GLOBAL && blackList.scope != SPECIFIC {
 		return errors.New("scope must be global or specific")
 	}
-	if blackList.blockedYype != TEMPORARY && blackList.blockedYype != PERMANENT {
+	if blackList.blockedType != TEMPORARY && blackList.blockedType != PERMANENT {
 		return errors.New("blocked type must be temporary or permanent")
 	}
-	if blackList.blockedYype == TEMPORARY && blackList.blockedUntil == nil {
+	if blackList.blockedType == TEMPORARY && blackList.blockedUntil == nil {
 		return errors.New("blocked until is required for temporary block")
 	}
 	if util.GetSizeString(blackList.document) == 0 {
@@ -108,7 +108,7 @@ func (blackList *BlackList) GetBlockedUntil() *time.Time {
 }
 
 func (blackList *BlackList) GetBlockedType() string {
-	return blackList.blockedYype
+	return blackList.blockedType
 }
 
 func (blackList *BlackList) GetCreatedAt() time.Time {

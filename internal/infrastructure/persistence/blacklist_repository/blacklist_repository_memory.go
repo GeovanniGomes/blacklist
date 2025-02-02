@@ -11,8 +11,8 @@ type BlackListRepositoryMemory struct {
 	collection_blacklist []entity.BlackList
 }
 
-func (black_list_repository *BlackListRepositoryMemory) Add(blacklist entity.BlackList) error {
-	black_list_repository.collection_blacklist = append(black_list_repository.collection_blacklist, blacklist)
+func (black_list_repository *BlackListRepositoryMemory) Add(blacklist *entity.BlackList) error {
+	black_list_repository.collection_blacklist = append(black_list_repository.collection_blacklist, *blacklist)
 	return nil
 }
 
