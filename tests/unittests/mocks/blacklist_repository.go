@@ -2,7 +2,7 @@
 // Source: internal/application/contracts/repository/blacklist_interface.go
 
 // Package mock_repositoty is a generated GoMock package.
-package mock_contracts
+package mock_repositoty
 
 import (
 	reflect "reflect"

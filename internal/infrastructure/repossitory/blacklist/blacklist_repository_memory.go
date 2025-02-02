@@ -1,4 +1,4 @@
-package blacklist_repository
+package blacklist
 
 import (
 	repositoty "github.com/GeovanniGomes/blacklist/internal/application/contracts/repository"

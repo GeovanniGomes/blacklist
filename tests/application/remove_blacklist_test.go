@@ -5,16 +5,16 @@ import (
 
 	"github.com/GeovanniGomes/blacklist/internal/application/usecase"
 	"github.com/GeovanniGomes/blacklist/internal/domain/entity"
-	"github.com/GeovanniGomes/blacklist/internal/infrastructure/persistence/audit_repository"
-	"github.com/GeovanniGomes/blacklist/internal/infrastructure/persistence/blacklist_repository"
+	"github.com/GeovanniGomes/blacklist/internal/infrastructure/repossitory/audit"
+	"github.com/GeovanniGomes/blacklist/internal/infrastructure/repossitory/blacklist"
 
 	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/require"
 )
 
-func TestReemoveBlackList(t *testing.T) {
-	repositoryMemory := blacklist_repository.BlackListRepositoryMemory{}
-	auditRepositoryMemory := audit_repository.AuditLoggerMemory{}
+func TestRemoveBlackList(t *testing.T) {
+	repositoryMemory := blacklist.BlackListRepositoryMemory{}
+	auditRepositoryMemory := audit.AuditLoggerMemory{}
 
 	usecaseAddBacklist := usecase.NewAddBlacklist(&repositoryMemory, &auditRepositoryMemory)
 	usecaseRemoveBacklist := usecase.NewRemoveBlacklist(&repositoryMemory)
@@ -28,5 +28,4 @@ func TestReemoveBlackList(t *testing.T) {
 
 	err = usecaseRemoveBacklist.Execute(blacklistEntity.GetUserIdentifier(), blacklistEntity.GetEventId())
 	require.Nil(t, err)
-
 }

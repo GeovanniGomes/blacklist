@@ -1,9 +1,10 @@
 package entity
 
 import (
-	"github.com/GeovanniGomes/blacklist/internal/util"
 	"errors"
 	"time"
+
+	"github.com/GeovanniGomes/blacklist/internal/util"
 
 	uuid "github.com/satori/go.uuid"
 )
@@ -25,10 +26,10 @@ type BlackList struct {
 	userIdentifier int
 	blockedUntil   *time.Time
 	blockedType    string
+	isActive       bool
 }
 
-func NewBlackList(enventId, reason, document, scope, blockedType string, userIdentifier int ,blockedUntil *time.Time) *BlackList {
-	
+func NewBlackList(enventId, reason, document, scope, blockedType string, userIdentifier int, blockedUntil *time.Time) *BlackList {
 	return &BlackList{
 		id:             uuid.NewV4().String(),
 		eventId:        enventId,
@@ -39,6 +40,7 @@ func NewBlackList(enventId, reason, document, scope, blockedType string, userIde
 		userIdentifier: userIdentifier,
 		blockedUntil:   blockedUntil,
 		blockedType:    blockedType,
+		isActive:       true,
 	}
 }
 
@@ -76,9 +78,9 @@ func (blackList *BlackList) IsValid() error {
 
 	return nil
 }
-func (blacklist * BlackList) ConverterBlockedUntilToString() string {
+func (blacklist *BlackList) ConverterBlockedUntilToString() string {
 	blockedUntil := blacklist.GetBlockedUntil()
-	if blockedUntil != nil{
+	if blockedUntil != nil {
 		return blockedUntil.Format(time.RFC3339)
 	}
 	return ""
@@ -113,4 +115,7 @@ func (blackList *BlackList) GetBlockedType() string {
 
 func (blackList *BlackList) GetCreatedAt() time.Time {
 	return blackList.createdAt
+}
+func (blackList *BlackList) GetIsActive()bool {
+	return blackList.isActive
 }
