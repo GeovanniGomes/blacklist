@@ -1,20 +1,23 @@
 package usecase
 
 import (
+	"time"
+
 	"github.com/GeovanniGomes/blacklist/internal/application/contracts/repository"
 	"github.com/GeovanniGomes/blacklist/internal/application/contracts/usecase/blacklist"
 	"github.com/GeovanniGomes/blacklist/internal/domain/entity"
-	"time"
+	"github.com/GeovanniGomes/blacklist/internal/infrastructure/persistence/contracts"
 )
 
 var _ blacklist.AddBlacklistInterface = (*UsecaseAddBlacklist)(nil)
 
 type UsecaseAddBlacklist struct {
 	blacklist_repository repositoty.BlackListRepositoryInterface
+	register_audit contracts.AuditLoggerInterface
 }
 
-func NewAddBlacklist(blacklist_repository repositoty.BlackListRepositoryInterface) *UsecaseAddBlacklist {
-	return &UsecaseAddBlacklist{blacklist_repository: blacklist_repository}
+func NewAddBlacklist(blacklist_repository repositoty.BlackListRepositoryInterface, register_audit contracts.AuditLoggerInterface) *UsecaseAddBlacklist {
+	return &UsecaseAddBlacklist{blacklist_repository: blacklist_repository, register_audit: register_audit}
 }
      
 func (c *UsecaseAddBlacklist)Execute(user_identifier int, eventId, reason, document, scope string, blocked_until *time.Time ) (*entity.BlackList, error) {
@@ -34,6 +37,11 @@ func (c *UsecaseAddBlacklist)Execute(user_identifier int, eventId, reason, docum
 	if err != nil{
 		return &blacklistEmpty, err
 	}
-
+	logDetails := map[string]interface{}{
+        "scope": scope,
+        "blocked_type": blocked_type,
+        "blocked_until": blocked_until,
+    }
+	c.register_audit.LogAction(user_identifier, eventId, contracts.ADD_BLACKLIST, &logDetails)
 	return blacklist,nil
 }

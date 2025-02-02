@@ -1,4 +1,4 @@
-package persistence
+package blacklist_repository
 
 import (
 	repositoty "github.com/GeovanniGomes/blacklist/internal/application/contracts/repository"

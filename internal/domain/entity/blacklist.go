@@ -76,6 +76,13 @@ func (blackList *BlackList) IsValid() error {
 
 	return nil
 }
+func (blacklist * BlackList) ConverterBlockedUntilToString() string {
+	blockedUntil := blacklist.GetBlockedUntil()
+	if blockedUntil != nil{
+		return blockedUntil.Format(time.RFC3339)
+	}
+	return ""
+}
 
 func (blackList *BlackList) GetId() string {
 	return blackList.id
