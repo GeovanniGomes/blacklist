@@ -3,6 +3,7 @@ package blacklist
 import (
 	"fmt"
 	"log"
+	"sync"
 
 	repositoty "github.com/GeovanniGomes/blacklist/internal/application/contracts/repository"
 	"github.com/GeovanniGomes/blacklist/internal/domain/entity"
@@ -12,6 +13,7 @@ import (
 var _ repositoty.BlackListRepositoryInterface = (*BlackListRepositoryPostgres)(nil)
 
 type BlackListRepositoryPostgres struct {
+	mutex       sync.Mutex
 	persistence contracts.DatabaseRelationalInterface
 }
 
@@ -20,6 +22,8 @@ func NewBlackListRepositoryPostgres(persistence contracts.DatabaseRelationalInte
 }
 
 func (b *BlackListRepositoryPostgres) Add(blacklist *entity.BlackList) error {
+	b.mutex.Lock()
+	defer b.mutex.Unlock()
 	err := b.persistence.InsertData(
 		"blacklist",
 		[]string{"id", "user_identifier", "event_id", "scope", "reason", "document", "blocked_until", "blocked_type", "is_active"},
@@ -43,6 +47,9 @@ func (b *BlackListRepositoryPostgres) Add(blacklist *entity.BlackList) error {
 }
 
 func (b *BlackListRepositoryPostgres) Check(userIdentifier int, evendId string) (bool, string) {
+	b.mutex.Lock()
+	defer b.mutex.Unlock()
+
 	rows, err := b.persistence.SelectQuery("SELECT reason FROM blacklist WHERE user_identifier = $1 and event_id = $2 and is_active = $3", userIdentifier, evendId, true)
 
 	if err != nil {
@@ -63,6 +70,9 @@ func (b *BlackListRepositoryPostgres) Check(userIdentifier int, evendId string) 
 }
 
 func (b *BlackListRepositoryPostgres) Remove(userIdentifier int, eventId string) error {
+	b.mutex.Lock()
+	defer b.mutex.Unlock()
+
 	return b.persistence.UpdateData(
 		"blacklist",
 		[]string{"is_active"},

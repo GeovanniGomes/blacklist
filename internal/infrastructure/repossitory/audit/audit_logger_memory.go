@@ -3,11 +3,10 @@ package audit
 import (
 	"encoding/json"
 	"log"
-	"sync"
 )
 
 type AuditLoggerMemory struct {
-	mu         sync.Mutex
+
 	collection [][]byte
 }
 
@@ -24,8 +23,6 @@ func (l *AuditLoggerMemory) LogAction(userIdentifier int, eventId, action string
 		return err
 	}
 
-	l.mu.Lock()
-	defer l.mu.Unlock()
 	l.collection = append(l.collection, detailsJSON)
 	return err
 }

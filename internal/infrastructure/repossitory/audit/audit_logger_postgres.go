@@ -2,11 +2,14 @@ package audit
 
 import (
 	"log"
+	"sync"
+
 	"github.com/GeovanniGomes/blacklist/internal/infrastructure/contracts"
 )
 
 var _ contracts.AuditLoggerInterface = (*AuditLoggerRepository)(nil)
 type AuditLoggerRepository struct {
+	mutex         sync.Mutex
 	persistence contracts.DatabaseRelationalInterface
 }
 
@@ -14,8 +17,10 @@ func NewDBAuditLogger(persistence contracts.DatabaseRelationalInterface) *AuditL
 	return &AuditLoggerRepository{persistence: persistence}
 }
 
-func (l *AuditLoggerRepository) LogAction(userIdentifier int, eventId, action string, details *map[string]interface{}) error {
-	err := l.persistence.InsertData(
+func (a *AuditLoggerRepository) LogAction(userIdentifier int, eventId, action string, details *map[string]interface{}) error {
+	a.mutex.Lock()         
+	defer a.mutex.Unlock() 
+	err := a.persistence.InsertData(
 		"blacklist",
 		[]string{"id", "user_identifier", "event_id", "action", "details"},
 		[]interface{}{
