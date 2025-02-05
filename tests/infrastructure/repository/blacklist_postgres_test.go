@@ -5,18 +5,17 @@ import (
 
 	"github.com/GeovanniGomes/blacklist/internal/domain/entity"
 	"github.com/GeovanniGomes/blacklist/internal/infrastructure/repossitory/blacklist"
-	"github.com/GeovanniGomes/blacklist/tests/infrastructure"
+	"github.com/GeovanniGomes/blacklist/tests"
 	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/require"
 )
 
-
-func TestSaveBlackList(t *testing.T){
-	interface_database, teardown := infrastructure.SetupPostgresContainer(t)
+func TestSaveBlackList(t *testing.T) {
+	interface_database, teardown := tests.SetupPostgresContainer(t)
 	defer teardown()
 
 	repositoryBlacklist := blacklist.NewBlackListRepositoryPostgres(interface_database)
-	prepareBlacklist := entity.NewBlackList(uuid.NewV4().String(),"Fradude identificada","email@gmail.com", entity.GLOBAL, entity.PERMANENT,10, nil)
+	prepareBlacklist := entity.NewBlackList(uuid.NewV4().String(), "Fradude identificada", "email@gmail.com", entity.GLOBAL, entity.PERMANENT, 10, nil)
 
 	err := prepareBlacklist.IsValid()
 	require.Nil(t, err)
@@ -34,12 +33,12 @@ func TestSaveBlackList(t *testing.T){
 	}
 }
 
-func TestCheckBlackList(t *testing.T){
-	interface_database, teardown := infrastructure.SetupPostgresContainer(t)
+func TestCheckBlackList(t *testing.T) {
+	interface_database, teardown := tests.SetupPostgresContainer(t)
 	defer teardown()
 
 	repositoryBlacklist := blacklist.NewBlackListRepositoryPostgres(interface_database)
-	prepareBlacklist := entity.NewBlackList(uuid.NewV4().String(),"Fradude identificada","email@gmail.com", entity.GLOBAL, entity.PERMANENT,10, nil)
+	prepareBlacklist := entity.NewBlackList(uuid.NewV4().String(), "Fradude identificada", "email@gmail.com", entity.GLOBAL, entity.PERMANENT, 10, nil)
 
 	err := prepareBlacklist.IsValid()
 	require.Nil(t, err)
@@ -51,12 +50,12 @@ func TestCheckBlackList(t *testing.T){
 	require.Equal(t, reason, "Fradude identificada")
 }
 
-func TestRemoveBlackList(t *testing.T){
-	interface_database, teardown := infrastructure.SetupPostgresContainer(t)
+func TestRemoveBlackList(t *testing.T) {
+	interface_database, teardown := tests.SetupPostgresContainer(t)
 	defer teardown()
 
 	repositoryBlacklist := blacklist.NewBlackListRepositoryPostgres(interface_database)
-	prepareBlacklist := entity.NewBlackList(uuid.NewV4().String(),"Fradude identificada","email@gmail.com", entity.GLOBAL, entity.PERMANENT,10, nil)
+	prepareBlacklist := entity.NewBlackList(uuid.NewV4().String(), "Fradude identificada", "email@gmail.com", entity.GLOBAL, entity.PERMANENT, 10, nil)
 
 	err := prepareBlacklist.IsValid()
 	require.Nil(t, err)
@@ -65,7 +64,7 @@ func TestRemoveBlackList(t *testing.T){
 	err = repositoryBlacklist.Remove(prepareBlacklist.GetUserIdentifier(), prepareBlacklist.GetEventId())
 	require.Nil(t, err)
 	result, reason := repositoryBlacklist.Check(prepareBlacklist.GetUserIdentifier(), prepareBlacklist.GetEventId())
-	
+
 	require.Equal(t, result, true)
 	require.Equal(t, reason, "")
 }

@@ -5,14 +5,14 @@ import (
 
 	"github.com/GeovanniGomes/blacklist/internal/domain/entity"
 	"github.com/GeovanniGomes/blacklist/internal/infrastructure/repossitory/audit"
-	"github.com/GeovanniGomes/blacklist/tests/infrastructure"
+	"github.com/GeovanniGomes/blacklist/tests"
 	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/require"
 )
 
 
 func TestAddLogger(t *testing.T){
-	interface_database, teardown := infrastructure.SetupPostgresContainer(t)
+	interface_database, teardown := tests.SetupPostgresContainer(t)
 	defer teardown()
 
 	repositoryBlacklist := audit.NewDBAuditLogger(interface_database)
