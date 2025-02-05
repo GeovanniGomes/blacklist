@@ -5,8 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"os"
-	"strconv"
 	"time"
 
 	"github.com/GeovanniGomes/blacklist/internal/infrastructure/contracts"
@@ -19,20 +17,7 @@ type RedisService struct {
 	client *redis.Client
 }
 
-func NewRedisService() (*RedisService, error) {
-	addr := os.Getenv("REDIS_ADDR")
-	password := os.Getenv("REDIS_PASSWORD")
-	dbStr := os.Getenv("REDIS_DB")
-
-	db := 0 // Valor padrão
-	if dbStr != "" {
-		var err error
-		db, err = strconv.Atoi(dbStr)
-		if err != nil {
-			return nil, fmt.Errorf("error converter REDIS_DB to int: %v", err)
-		}
-	}
-
+func NewRedisService(addr, password string, db int) (*RedisService, error) {
 	client := redis.NewClient(&redis.Options{
 		Addr:     addr,
 		Password: password,
@@ -52,15 +37,19 @@ func NewRedisService() (*RedisService, error) {
 
 func (r *RedisService) SetCache(ctx context.Context, key string, value map[string]interface{}, expiration *time.Duration) error {
 	var err error
+	var expiration_value time.Duration
+	
 	detailsJSON, err := json.Marshal(value)
 	if err != nil {
 		return fmt.Errorf("error serializer value to JSON: %v", err)
 	}
+	
 	if expiration != nil {
-		err = r.client.Set(ctx,key , detailsJSON, *expiration).Err()
-	} else {
-		err = r.client.Set(ctx, key, detailsJSON, 0).Err()
-	}
+		expiration_value = *expiration
+	}else {expiration_value = 0}
+
+	err = r.client.Set(ctx, key, detailsJSON, expiration_value).Err()
+
 	if err != nil {
 		return fmt.Errorf("error set value cache: %v", err)
 	}
