@@ -5,7 +5,6 @@ import (
 
 	"github.com/GeovanniGomes/blacklist/internal/application/usecase"
 	"github.com/GeovanniGomes/blacklist/internal/domain/entity"
-	"github.com/GeovanniGomes/blacklist/internal/infrastructure/repossitory/audit"
 	"github.com/GeovanniGomes/blacklist/internal/infrastructure/repossitory/blacklist"
 
 	uuid "github.com/satori/go.uuid"
@@ -14,9 +13,8 @@ import (
 
 func TestRemoveBlackList(t *testing.T) {
 	repositoryMemory := blacklist.BlackListRepositoryMemory{}
-	auditRepositoryMemory := audit.AuditLoggerMemory{}
 
-	usecaseAddBacklist := usecase.NewAddBlacklist(&repositoryMemory, &auditRepositoryMemory)
+	usecaseAddBacklist := usecase.NewAddBlacklist(&repositoryMemory)
 	usecaseRemoveBacklist := usecase.NewRemoveBlacklist(&repositoryMemory)
 	eventId := uuid.NewV4().String()
 	eventIdTwo := uuid.NewV4().String()

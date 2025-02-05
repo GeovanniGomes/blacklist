@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"fmt"
+	"os"
 	"strings"
 	"sync"
 
@@ -17,31 +18,43 @@ type PostgresDatabase struct {
 	lock sync.Mutex
 }
 
-// Connect garante que apenas uma conexão ativa seja criada.
-func (pg *PostgresDatabase) Connect(connectionString string) (*sql.DB, error) {
+func NewPostgresDatabase(connectionString string) (*PostgresDatabase, error) {
+	if connectionString == "" {
+		connectionString = os.Getenv("APP_CONNECTION_DATABASE_STRING")
+	}
+
+	if connectionString == "" {
+		return nil, fmt.Errorf("string de conexão não fornecida")
+	}
+
+	pg := &PostgresDatabase{}
+	if err := pg.connect(connectionString); err != nil {
+		return nil, err
+	}
+	return pg, nil
+}
+
+func (pg *PostgresDatabase) connect(connectionString string) error {
 	pg.lock.Lock()
 	defer pg.lock.Unlock()
 
-	// Se já houver uma conexão ativa, reutiliza.
 	if pg.DB != nil {
-		return pg.DB, nil
+		return nil
 	}
 
 	db, err := sql.Open("postgres", connectionString)
 	if err != nil {
-		return nil, fmt.Errorf("erro ao conectar no banco: %v", err)
+		return fmt.Errorf("erro ao conectar no banco: %w", err)
 	}
 
-	// Testa a conexão antes de retorná-la.
 	if err := db.Ping(); err != nil {
-		return nil, fmt.Errorf("falha ao pingar o banco de dados: %v", err)
+		return fmt.Errorf("falha ao pingar o banco de dados: %w", err)
 	}
 
 	pg.DB = db
-	return db, nil
+	return nil
 }
 
-// InsertData insere registros dinamicamente na tabela especificada.
 func (pg *PostgresDatabase) InsertData(tableName string, columns []string, values []interface{}) error {
 	if pg.DB == nil {
 		return fmt.Errorf("conexão com o banco de dados não inicializada")
@@ -51,7 +64,6 @@ func (pg *PostgresDatabase) InsertData(tableName string, columns []string, value
 		return fmt.Errorf("colunas e valores devem ter o mesmo tamanho e não podem ser vazios")
 	}
 
-	// Construção da query dinâmica
 	placeholders := make([]string, len(values))
 	for i := range values {
 		placeholders[i] = fmt.Sprintf("$%d", i+1)
@@ -71,22 +83,17 @@ func (pg *PostgresDatabase) UpdateData(tableName string, columns []string, value
 		return fmt.Errorf("colunas e valores devem ter o mesmo tamanho e não podem ser vazios")
 	}
 
-	// Criar a cláusula SET com placeholders corretamente numerados
 	setClauses := make([]string, len(columns))
 	for i, col := range columns {
 		setClauses[i] = fmt.Sprintf("%s = $%d", col, i+1)
 	}
 
-	// A condição WHERE já deve conter placeholders corretamente ($1, $2, etc.)
 	query := fmt.Sprintf("UPDATE %s SET %s WHERE %s", tableName, strings.Join(setClauses, ", "), condition)
-
-	// Combinar os argumentos de valores e os argumentos da condição WHERE
 	allArgs := append(values, conditionArgs...)
 
 	return pg.executeQueryWithTransaction(query, allArgs...)
 }
 
-// SelectQuery executa um SELECT genérico.
 func (pg *PostgresDatabase) SelectQuery(query string, args ...interface{}) (*sql.Rows, error) {
 	if pg.DB == nil {
 		return nil, fmt.Errorf("conexão com o banco de dados não inicializada")
@@ -94,40 +101,38 @@ func (pg *PostgresDatabase) SelectQuery(query string, args ...interface{}) (*sql
 
 	rows, err := pg.DB.Query(query, args...)
 	if err != nil {
-		return nil, fmt.Errorf("erro ao executar SELECT: %v", err)
+		return nil, fmt.Errorf("erro ao executar SELECT: %w", err)
 	}
 
 	return rows, nil
 }
 
-// executeQueryWithTransaction executa queries dentro de uma transação segura.
 func (pg *PostgresDatabase) executeQueryWithTransaction(query string, args ...interface{}) error {
 	tx, err := pg.DB.Begin()
 	if err != nil {
-		return fmt.Errorf("erro ao iniciar transação: %v", err)
+		return fmt.Errorf("erro ao iniciar transação: %w", err)
 	}
 
 	stmt, err := tx.Prepare(query)
 	if err != nil {
 		tx.Rollback()
-		return fmt.Errorf("erro ao preparar query: %v", err)
+		return fmt.Errorf("erro ao preparar query: %w", err)
 	}
 	defer stmt.Close()
 
 	_, err = stmt.Exec(args...)
 	if err != nil {
 		tx.Rollback()
-		return fmt.Errorf("erro ao executar query: %v", err)
+		return fmt.Errorf("erro ao executar query: %w", err)
 	}
 
 	if err = tx.Commit(); err != nil {
-		return fmt.Errorf("erro ao executar commit: %v", err)
+		return fmt.Errorf("erro ao executar commit: %w", err)
 	}
 
 	return nil
 }
 
-// Close fecha a conexão com o banco de dados.
 func (pg *PostgresDatabase) Close() error {
 	pg.lock.Lock()
 	defer pg.lock.Unlock()

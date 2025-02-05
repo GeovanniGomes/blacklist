@@ -13,11 +13,8 @@ func TestCheckBlacklist(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockCheckBlacklist := check_mock.NewMockBlackListRepositoryInterface(ctrl)
-	mockAddLog := check_mock.NewMockAuditLoggerInterface(ctrl)
-
 	mockCheckBlacklist.EXPECT().Check(gomock.Any(), gomock.Any()).Return(true, "Fraude detectada").AnyTimes()
-	mockAddLog.EXPECT().LogAction(gomock.Any(), gomock.Any(), gomock.Any(), gomock.AssignableToTypeOf(&map[string]interface{}{})).AnyTimes()
-	usecase := new_black_list_usecase.NewCheckBlacklist(mockCheckBlacklist, mockAddLog)
+	usecase := new_black_list_usecase.NewCheckBlacklist(mockCheckBlacklist)
 
 	blocked, mesage := usecase.Execute(10, "event_id")
 	if blocked != true {

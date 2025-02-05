@@ -9,14 +9,32 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
-    command: ["redis-server", "--appendonly", "yes"]
+    command: [ "redis-server", "--appendonly", "yes" ]
     networks:
-      - redis_network
+      - app_network
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres_container
+    restart: always
+    environment:
+      POSTGRES_USER: applicattion_blackist
+      POSTGRES_PASSWORD: applicattion_blackist
+      POSTGRES_DB: blackist
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - app_network
 
 volumes:
   redis_data:
     driver: local
+  postgres_data:
+    driver: local
 
 networks:
-  redis_network:
+  app_network:
     driver: bridge

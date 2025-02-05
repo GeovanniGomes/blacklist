@@ -6,5 +6,5 @@ const (
 )
 
 type AuditLoggerInterface interface {
-	LogAction(userIdentifier int, eventId, action string, details *map[string]interface{}) error
+	LogAction(userIdentifier int, eventId, action string, details map[string]interface{}) error
 }
