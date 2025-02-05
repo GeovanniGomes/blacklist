@@ -1,5 +1,4 @@
 package repository
-
 import (
 	"context"
 	"encoding/json"
@@ -38,7 +37,7 @@ func NewRedisService(addr, password string, db int) (*RedisService, error) {
 func (r *RedisService) SetCache(ctx context.Context, key string, value map[string]interface{}, expiration *time.Duration) error {
 	var err error
 	var expiration_value time.Duration
-	
+
 	detailsJSON, err := json.Marshal(value)
 	if err != nil {
 		return fmt.Errorf("error serializer value to JSON: %v", err)

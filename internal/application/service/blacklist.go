@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"time"
 
 	"github.com/GeovanniGomes/blacklist/internal/application/contracts/usecase/blacklist"
 	"github.com/GeovanniGomes/blacklist/internal/application/dto"
@@ -61,14 +60,14 @@ func (s *BlacklistService) AddBlacklist(requestInput dto.BlacklistInput) error {
 		log.Println(err.Error())
 	}
 	key_cache := s.generate_key_cache(blacklistEntitty.GetUserIdentifier(), blacklistEntitty.GetEventId())
-	s.persistence_cache.SetCache(ctx, key_cache, logDetails, nil)
-
+	err = s.persistence_cache.SetCache(ctx, key_cache, logDetails, nil)
+	log.Println(fmt.Printf("result action set cache %v", err))
 	log.Println("Finish completed add blacklist")
 	return nil
 }
 
 func (s *BlacklistService) CheckBlacklist(requestInput dto.BlacklistInputCheck) (dto.BlacklistOutputCheck, error) {
-	userIdentifier, eventId:= requestInput.UserIdentifier, requestInput.EventId
+	userIdentifier, eventId := requestInput.UserIdentifier, requestInput.EventId
 	log.Printf("Start check blacklist witth data: %v %v", requestInput.UserIdentifier, requestInput.EventId)
 
 	ctx := context.Background()
@@ -79,16 +78,15 @@ func (s *BlacklistService) CheckBlacklist(requestInput dto.BlacklistInputCheck) 
 	if detail_cache != nil {
 		reason, _ := detail_cache["reason"].(string)
 		is_blocked, _ := detail_cache["is_blocked"].(bool)
-		
+
 		logDetails := map[string]interface{}{
 			"blocked_type":  detail_cache["blocked_type"].(string),
-			"blocked_until": detail_cache["blocked_until"].(*time.Time),
+			"blocked_until": detail_cache["blocked_until"],
 			"reason":        reason,
 			"is_blocked":    is_blocked,
-
 		}
 
-		err := s.register_audit.LogAction(userIdentifier,eventId,contracts.CHECK_BLACKLIST, logDetails)
+		err := s.register_audit.LogAction(userIdentifier, eventId, contracts.CHECK_BLACKLIST, logDetails)
 		if err != nil {
 			log.Println(err.Error())
 		}
@@ -102,8 +100,8 @@ func (s *BlacklistService) CheckBlacklist(requestInput dto.BlacklistInputCheck) 
 }
 
 func (s *BlacklistService) RemoveBlacklist(requestInput dto.BlacklistInputRemove) error {
-	userIdentifier, eventId:= requestInput.UserIdentifier, requestInput.EventId
-	
+	userIdentifier, eventId := requestInput.UserIdentifier, requestInput.EventId
+
 	log.Printf("Start remove blacklist witth data: %v %v", userIdentifier, eventId)
 	ctx := context.Background()
 	key_cache := s.generate_key_cache(userIdentifier, eventId)
