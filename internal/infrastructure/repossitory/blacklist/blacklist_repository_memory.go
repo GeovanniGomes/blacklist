@@ -5,7 +5,7 @@ import (
 	"github.com/GeovanniGomes/blacklist/internal/domain/entity"
 )
 
-var _ repositoty.BlackListRepositoryInterface = (*BlackListRepositoryMemory)(nil)
+var _ repositoty.IBlackListRepository = (*BlackListRepositoryMemory)(nil)
 
 type BlackListRepositoryMemory struct {
 	collection_blacklist []entity.BlackList

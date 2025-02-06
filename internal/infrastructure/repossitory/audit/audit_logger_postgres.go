@@ -9,14 +9,14 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-var _ contracts.AuditLoggerInterface = (*AuditLoggerRepository)(nil)
+var _ contracts.IAuditLogger = (*AuditLoggerRepository)(nil)
 
 type AuditLoggerRepository struct {
 	mutex       sync.Mutex
-	persistence contracts.DatabaseRelationalInterface
+	persistence contracts.IDatabaseRelational
 }
 
-func NewDBAuditLogger(persistence contracts.DatabaseRelationalInterface) *AuditLoggerRepository {
+func NewDBAuditLogger(persistence contracts.IDatabaseRelational) *AuditLoggerRepository {
 	return &AuditLoggerRepository{persistence: persistence}
 }
 

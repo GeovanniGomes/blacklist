@@ -10,31 +10,31 @@ import (
 	gomock "github.com/golang/mock/gomock"
 )
 
-// MockAuditLoggerInterface is a mock of AuditLoggerInterface interface.
-type MockAuditLoggerInterface struct {
+// MockIAuditLogger is a mock of IAuditLogger interface.
+type MockIAuditLogger struct {
 	ctrl     *gomock.Controller
-	recorder *MockAuditLoggerInterfaceMockRecorder
+	recorder *MockIAuditLoggerMockRecorder
 }
 
-// MockAuditLoggerInterfaceMockRecorder is the mock recorder for MockAuditLoggerInterface.
-type MockAuditLoggerInterfaceMockRecorder struct {
-	mock *MockAuditLoggerInterface
+// MockIAuditLoggerMockRecorder is the mock recorder for MockIAuditLogger.
+type MockIAuditLoggerMockRecorder struct {
+	mock *MockIAuditLogger
 }
 
-// NewMockAuditLoggerInterface creates a new mock instance.
-func NewMockAuditLoggerInterface(ctrl *gomock.Controller) *MockAuditLoggerInterface {
-	mock := &MockAuditLoggerInterface{ctrl: ctrl}
-	mock.recorder = &MockAuditLoggerInterfaceMockRecorder{mock}
+// NewMockIAuditLogger creates a new mock instance.
+func NewMockIAuditLogger(ctrl *gomock.Controller) *MockIAuditLogger {
+	mock := &MockIAuditLogger{ctrl: ctrl}
+	mock.recorder = &MockIAuditLoggerMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockAuditLoggerInterface) EXPECT() *MockAuditLoggerInterfaceMockRecorder {
+func (m *MockIAuditLogger) EXPECT() *MockIAuditLoggerMockRecorder {
 	return m.recorder
 }
 
 // LogAction mocks base method.
-func (m *MockAuditLoggerInterface) LogAction(userIdentifier int, eventId, action string, details *map[string]interface{}) error {
+func (m *MockIAuditLogger) LogAction(userIdentifier int, eventId, action string, details *map[string]interface{}) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "LogAction", userIdentifier, eventId, action, details)
 	ret0, _ := ret[0].(error)
@@ -42,7 +42,7 @@ func (m *MockAuditLoggerInterface) LogAction(userIdentifier int, eventId, action
 }
 
 // LogAction indicates an expected call of LogAction.
-func (mr *MockAuditLoggerInterfaceMockRecorder) LogAction(userIdentifier, eventId, action, details interface{}) *gomock.Call {
+func (mr *MockIAuditLoggerMockRecorder) LogAction(userIdentifier, eventId, action, details interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LogAction", reflect.TypeOf((*MockAuditLoggerInterface)(nil).LogAction), userIdentifier, eventId, action, details)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LogAction", reflect.TypeOf((*MockIAuditLogger)(nil).LogAction), userIdentifier, eventId, action, details)
 }

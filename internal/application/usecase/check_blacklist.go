@@ -5,14 +5,14 @@ import (
 	"github.com/GeovanniGomes/blacklist/internal/application/contracts/usecase/blacklist"
 )
 
-var _ blacklist.CheckBlacklistInterface = (*UsecaseCheckBlacklist)(nil)
+var _ blacklist.ICheckBlacklist = (*UsecaseCheckBlacklist)(nil)
 
 type UsecaseCheckBlacklist struct {
-	blacklist_repository repository.BlackListRepositoryInterface
+	blacklist_repository repository.IBlackListRepository
 }
 
 func NewCheckBlacklist(
-	blacklist_repository repository.BlackListRepositoryInterface) *UsecaseCheckBlacklist {
+	blacklist_repository repository.IBlackListRepository) *UsecaseCheckBlacklist {
 	return &UsecaseCheckBlacklist{blacklist_repository: blacklist_repository}
 }
 

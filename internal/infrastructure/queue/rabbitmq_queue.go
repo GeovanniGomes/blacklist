@@ -8,54 +8,54 @@ import (
 )
 
 type RabbitMQQueue struct {
-    conn    *amqp.Connection
-    channel *amqp.Channel
+	conn    *amqp.Connection
+	channel *amqp.Channel
 }
 
-func NewRabbitMQQueue(url string) contracts.QueueInterface {
-    conn, err := amqp.Dial(url)
-    if err != nil {
-        log.Fatalf("Erro ao conectar no RabbitMQ: %v", err)
-    }
+func NewRabbitMQQueue(url string) contracts.IQueue {
+	conn, err := amqp.Dial(url)
+	if err != nil {
+		log.Fatalf("Erro ao conectar no RabbitMQ: %v", err)
+	}
 
-    ch, err := conn.Channel()
-    if err != nil {
-        log.Fatalf("Erro ao abrir um canal: %v", err)
-    }
+	ch, err := conn.Channel()
+	if err != nil {
+		log.Fatalf("Erro ao abrir um canal: %v", err)
+	}
 
-    return &RabbitMQQueue{conn: conn, channel: ch}
+	return &RabbitMQQueue{conn: conn, channel: ch}
 }
 
 func (r *RabbitMQQueue) Publish(queue string, message []byte) error {
-    _, err := r.channel.QueueDeclare(queue, true, false, false, false, nil)
-    if err != nil {
-        return err
-    }
+	_, err := r.channel.QueueDeclare(queue, true, false, false, false, nil)
+	if err != nil {
+		return err
+	}
 
-    err = r.channel.Publish("", queue, false, false, amqp.Publishing{
-        ContentType: "application/json",
-        Body:        message,
-    })
+	err = r.channel.Publish("", queue, false, false, amqp.Publishing{
+		ContentType: "application/json",
+		Body:        message,
+	})
 
-    return err
+	return err
 }
 
 func (r *RabbitMQQueue) Consume(queue string, worker func([]byte)) error {
-    _, err := r.channel.QueueDeclare(queue, true, false, false, false, nil)
-    if err != nil {
-        return err
-    }
+	_, err := r.channel.QueueDeclare(queue, true, false, false, false, nil)
+	if err != nil {
+		return err
+	}
 
-    msgs, err := r.channel.Consume(queue, "", true, false, false, false, nil)
-    if err != nil {
-        return err
-    }
+	msgs, err := r.channel.Consume(queue, "", true, false, false, false, nil)
+	if err != nil {
+		return err
+	}
 
-    go func() {
-        for msg := range msgs {
-            worker(msg.Body)
-        }
-    }()
+	go func() {
+		for msg := range msgs {
+			worker(msg.Body)
+		}
+	}()
 
-    return nil
+	return nil
 }

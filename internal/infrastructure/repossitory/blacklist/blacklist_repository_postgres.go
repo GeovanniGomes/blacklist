@@ -10,14 +10,14 @@ import (
 	"github.com/GeovanniGomes/blacklist/internal/infrastructure/contracts"
 )
 
-var _ repositoty.BlackListRepositoryInterface = (*BlackListRepositoryPostgres)(nil)
+var _ repositoty.IBlackListRepository = (*BlackListRepositoryPostgres)(nil)
 
 type BlackListRepositoryPostgres struct {
 	mutex       sync.Mutex
-	persistence contracts.DatabaseRelationalInterface
+	persistence contracts.IDatabaseRelational
 }
 
-func NewBlackListRepositoryPostgres(persistence contracts.DatabaseRelationalInterface) *BlackListRepositoryPostgres {
+func NewBlackListRepositoryPostgres(persistence contracts.IDatabaseRelational) *BlackListRepositoryPostgres {
 	return &BlackListRepositoryPostgres{persistence: persistence}
 }
 

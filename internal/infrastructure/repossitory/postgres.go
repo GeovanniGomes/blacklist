@@ -11,7 +11,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-var _ contracts.DatabaseRelationalInterface = (*PostgresDatabase)(nil)
+var _ contracts.IDatabaseRelational = (*PostgresDatabase)(nil)
 
 type PostgresDatabase struct {
 	DB   *sql.DB

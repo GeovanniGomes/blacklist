@@ -1,10 +1,11 @@
 package blacklist
 
 import (
-	"github.com/GeovanniGomes/blacklist/internal/domain/entity"
 	"time"
+
+	"github.com/GeovanniGomes/blacklist/internal/domain/entity"
 )
 
-type AddBlacklistInterface interface {
-	Execute(userIndentifier int, evendId, reason, document, scope string, blockedUntil *time.Time ) (*entity.BlackList, error)
+type IAddBlacklist interface {
+	Execute(userIndentifier int, evendId, reason, document, scope string, blockedUntil *time.Time) (*entity.BlackList, error)
 }

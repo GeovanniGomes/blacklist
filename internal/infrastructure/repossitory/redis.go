@@ -1,4 +1,5 @@
 package repository
+
 import (
 	"context"
 	"encoding/json"
@@ -10,7 +11,7 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
-var _ contracts.CacheInterface = (*RedisService)(nil)
+var _ contracts.ICache = (*RedisService)(nil)
 
 type RedisService struct {
 	client *redis.Client
@@ -42,10 +43,12 @@ func (r *RedisService) SetCache(ctx context.Context, key string, value map[strin
 	if err != nil {
 		return fmt.Errorf("error serializer value to JSON: %v", err)
 	}
-	
+
 	if expiration != nil {
 		expiration_value = *expiration
-	}else {expiration_value = 0}
+	} else {
+		expiration_value = 0
+	}
 
 	err = r.client.Set(ctx, key, detailsJSON, expiration_value).Err()
 

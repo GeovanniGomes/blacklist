@@ -8,13 +8,13 @@ import (
 	"github.com/GeovanniGomes/blacklist/internal/domain/entity"
 )
 
-var _ blacklist.AddBlacklistInterface = (*UsecaseAddBlacklist)(nil)
+var _ blacklist.IAddBlacklist = (*UsecaseAddBlacklist)(nil)
 
 type UsecaseAddBlacklist struct {
-	blacklist_repository repositoty.BlackListRepositoryInterface
+	blacklist_repository repositoty.IBlackListRepository
 }
 
-func NewAddBlacklist(blacklist_repository repositoty.BlackListRepositoryInterface) *UsecaseAddBlacklist {
+func NewAddBlacklist(blacklist_repository repositoty.IBlackListRepository) *UsecaseAddBlacklist {
 	return &UsecaseAddBlacklist{blacklist_repository: blacklist_repository}
 }
 

@@ -20,7 +20,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func SetupRunTest(t *testing.T) (*service.BlacklistService, contracts.DatabaseRelationalInterface, contracts.CacheInterface) {
+func SetupRunTest(t *testing.T) (*service.BlacklistService, contracts.IDatabaseRelational, contracts.ICache) {
 	interface_database, teardown := tests.SetupPostgresContainer(t)
 	defer teardown()
 

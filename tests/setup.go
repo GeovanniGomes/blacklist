@@ -9,7 +9,7 @@ import (
 	repository "github.com/GeovanniGomes/blacklist/internal/infrastructure/repossitory"
 )
 
-func SetupPostgresContainer(t *testing.T) (contracts.DatabaseRelationalInterface, func()) {
+func SetupPostgresContainer(t *testing.T) (contracts.IDatabaseRelational, func()) {
 	dbURL := fmt.Sprintf("postgres://applicattion_blackist:applicattion_blackist@%s:%s/test?sslmode=disable", "localhost", "5432")
 	db, err := sql.Open("postgres", dbURL)
 
@@ -51,8 +51,8 @@ func createTableBlacklist(db *sql.DB) {
 		blocked_type TEXT NOT NULL,
 		is_active BOOLEAN NOT NULL DEFAULT TRUE
 	);`
-	_,err := db.Exec(createTableSQL)
-	if err != nil{
+	_, err := db.Exec(createTableSQL)
+	if err != nil {
 		panic(err)
 	}
 }
@@ -67,8 +67,8 @@ func createTableAudit(db *sql.DB) {
 		action TEXT NOT NULL,
 		details TEXT NOT NULL
 	);`
-	_,err := db.Exec(createTableSQL)
-	if err != nil{
+	_, err := db.Exec(createTableSQL)
+	if err != nil {
 		panic(err)
 	}
 }

@@ -7,10 +7,10 @@ import (
 )
 
 type BlacklistConsumer struct {
-	queue contracts.QueueInterface
+	queue contracts.IQueue
 }
 
-func NewBlacklistConsumer(queue contracts.QueueInterface) *BlacklistConsumer {
+func NewBlacklistConsumer(queue contracts.IQueue) *BlacklistConsumer {
 	return &BlacklistConsumer{queue: queue}
 }
 

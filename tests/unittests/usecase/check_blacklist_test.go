@@ -12,7 +12,7 @@ func TestCheckBlacklist(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockCheckBlacklist := check_mock.NewMockBlackListRepositoryInterface(ctrl)
+	mockCheckBlacklist := check_mock.NewMockIBlackListRepository(ctrl)
 	mockCheckBlacklist.EXPECT().Check(gomock.Any(), gomock.Any()).Return(true, "Fraude detectada").AnyTimes()
 	usecase := new_black_list_usecase.NewCheckBlacklist(mockCheckBlacklist)
 

@@ -11,31 +11,31 @@ import (
 	gomock "github.com/golang/mock/gomock"
 )
 
-// MockBlackListRepositoryInterface is a mock of BlackListRepositoryInterface interface.
-type MockBlackListRepositoryInterface struct {
+// MockIBlackListRepository is a mock of IBlackListRepository interface.
+type MockIBlackListRepository struct {
 	ctrl     *gomock.Controller
-	recorder *MockBlackListRepositoryInterfaceMockRecorder
+	recorder *MockIBlackListRepositoryMockRecorder
 }
 
-// MockBlackListRepositoryInterfaceMockRecorder is the mock recorder for MockBlackListRepositoryInterface.
-type MockBlackListRepositoryInterfaceMockRecorder struct {
-	mock *MockBlackListRepositoryInterface
+// MockIBlackListRepositoryMockRecorder is the mock recorder for MockIBlackListRepository.
+type MockIBlackListRepositoryMockRecorder struct {
+	mock *MockIBlackListRepository
 }
 
-// NewMockBlackListRepositoryInterface creates a new mock instance.
-func NewMockBlackListRepositoryInterface(ctrl *gomock.Controller) *MockBlackListRepositoryInterface {
-	mock := &MockBlackListRepositoryInterface{ctrl: ctrl}
-	mock.recorder = &MockBlackListRepositoryInterfaceMockRecorder{mock}
+// NewMockIBlackListRepository creates a new mock instance.
+func NewMockIBlackListRepository(ctrl *gomock.Controller) *MockIBlackListRepository {
+	mock := &MockIBlackListRepository{ctrl: ctrl}
+	mock.recorder = &MockIBlackListRepositoryMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockBlackListRepositoryInterface) EXPECT() *MockBlackListRepositoryInterfaceMockRecorder {
+func (m *MockIBlackListRepository) EXPECT() *MockIBlackListRepositoryMockRecorder {
 	return m.recorder
 }
 
 // Add mocks base method.
-func (m *MockBlackListRepositoryInterface) Add(blacklist *entity.BlackList) error {
+func (m *MockIBlackListRepository) Add(blacklist *entity.BlackList) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Add", blacklist)
 	ret0, _ := ret[0].(error)
@@ -43,13 +43,13 @@ func (m *MockBlackListRepositoryInterface) Add(blacklist *entity.BlackList) erro
 }
 
 // Add indicates an expected call of Add.
-func (mr *MockBlackListRepositoryInterfaceMockRecorder) Add(blacklist interface{}) *gomock.Call {
+func (mr *MockIBlackListRepositoryMockRecorder) Add(blacklist interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Add", reflect.TypeOf((*MockBlackListRepositoryInterface)(nil).Add), blacklist)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Add", reflect.TypeOf((*MockIBlackListRepository)(nil).Add), blacklist)
 }
 
 // Check mocks base method.
-func (m *MockBlackListRepositoryInterface) Check(userIndentifier int, evendId string) (bool, string) {
+func (m *MockIBlackListRepository) Check(userIndentifier int, evendId string) (bool, string) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Check", userIndentifier, evendId)
 	ret0, _ := ret[0].(bool)
@@ -58,13 +58,13 @@ func (m *MockBlackListRepositoryInterface) Check(userIndentifier int, evendId st
 }
 
 // Check indicates an expected call of Check.
-func (mr *MockBlackListRepositoryInterfaceMockRecorder) Check(userIndentifier, evendId interface{}) *gomock.Call {
+func (mr *MockIBlackListRepositoryMockRecorder) Check(userIndentifier, evendId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Check", reflect.TypeOf((*MockBlackListRepositoryInterface)(nil).Check), userIndentifier, evendId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Check", reflect.TypeOf((*MockIBlackListRepository)(nil).Check), userIndentifier, evendId)
 }
 
 // Remove mocks base method.
-func (m *MockBlackListRepositoryInterface) Remove(userIndentifier int, eventId string) error {
+func (m *MockIBlackListRepository) Remove(userIndentifier int, eventId string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Remove", userIndentifier, eventId)
 	ret0, _ := ret[0].(error)
@@ -72,7 +72,7 @@ func (m *MockBlackListRepositoryInterface) Remove(userIndentifier int, eventId s
 }
 
 // Remove indicates an expected call of Remove.
-func (mr *MockBlackListRepositoryInterfaceMockRecorder) Remove(userIndentifier, eventId interface{}) *gomock.Call {
+func (mr *MockIBlackListRepositoryMockRecorder) Remove(userIndentifier, eventId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Remove", reflect.TypeOf((*MockBlackListRepositoryInterface)(nil).Remove), userIndentifier, eventId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Remove", reflect.TypeOf((*MockIBlackListRepository)(nil).Remove), userIndentifier, eventId)
 }

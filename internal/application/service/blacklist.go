@@ -12,21 +12,21 @@ import (
 )
 
 type BlacklistService struct {
-	usecaseCreateBlacklist blacklist.AddBlacklistInterface
-	usecaseCheckBlacklist  blacklist.CheckBlacklistInterface
-	usecaseRemoveBlacklist blacklist.RemoveBlackListInterface
-	register_audit         contracts.AuditLoggerInterface
-	persistence_cache      contracts.CacheInterface
-	producer      *producer.BlacklistProducer
+	usecaseCreateBlacklist blacklist.IAddBlacklist
+	usecaseCheckBlacklist  blacklist.ICheckBlacklist
+	usecaseRemoveBlacklist blacklist.IRemoveBlackList
+	register_audit         contracts.IAuditLogger
+	persistence_cache      contracts.ICache
+	producer               *producer.BlacklistProducer
 }
 
 func NewBlackListService(
-	usecaseCreateBlacklist blacklist.AddBlacklistInterface,
-	usecaseCheckBlacklist blacklist.CheckBlacklistInterface,
-	usecaseRemoveBlacklist blacklist.RemoveBlackListInterface,
-	register_audit contracts.AuditLoggerInterface,
-	persistence_cache contracts.CacheInterface,
-	producer      *producer.BlacklistProducer,
+	usecaseCreateBlacklist blacklist.IAddBlacklist,
+	usecaseCheckBlacklist blacklist.ICheckBlacklist,
+	usecaseRemoveBlacklist blacklist.IRemoveBlackList,
+	register_audit contracts.IAuditLogger,
+	persistence_cache contracts.ICache,
+	producer *producer.BlacklistProducer,
 ) *BlacklistService {
 	return &BlacklistService{
 		usecaseCreateBlacklist: usecaseCreateBlacklist,
@@ -34,7 +34,7 @@ func NewBlackListService(
 		usecaseRemoveBlacklist: usecaseRemoveBlacklist,
 		register_audit:         register_audit,
 		persistence_cache:      persistence_cache,
-		producer: producer,
+		producer:               producer,
 	}
 }
 

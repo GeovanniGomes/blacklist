@@ -7,14 +7,14 @@ import (
 )
 
 type Dispatcher struct {
-	queue contracts.QueueInterface
+	queue contracts.IQueue
 }
 
-func NewDispatcher(queue contracts.QueueInterface) *Dispatcher {
+func NewDispatcher(queue contracts.IQueue) *Dispatcher {
 	return &Dispatcher{queue: queue}
 }
 
-func (d *Dispatcher) Dispatch(queue,eventType, data string) {
+func (d *Dispatcher) Dispatch(queue, eventType, data string) {
 	message := []byte(`{"event":"` + eventType + `","data":"` + data + `"}`)
 
 	err := d.queue.Publish(queue, message)

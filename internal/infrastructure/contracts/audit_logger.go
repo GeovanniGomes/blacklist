@@ -5,6 +5,6 @@ const (
 	ADD_BLACKLIST   = "add blacklist"
 )
 
-type AuditLoggerInterface interface {
+type IAuditLogger interface {
 	LogAction(userIdentifier int, eventId, action string, details map[string]interface{}) error
 }
