@@ -8,6 +8,7 @@ import (
 	"github.com/GeovanniGomes/blacklist/internal/application/contracts/usecase/blacklist"
 	"github.com/GeovanniGomes/blacklist/internal/application/dto"
 	"github.com/GeovanniGomes/blacklist/internal/infrastructure/contracts"
+	"github.com/GeovanniGomes/blacklist/internal/infrastructure/queue/producer"
 )
 
 type BlacklistService struct {
@@ -16,6 +17,7 @@ type BlacklistService struct {
 	usecaseRemoveBlacklist blacklist.RemoveBlackListInterface
 	register_audit         contracts.AuditLoggerInterface
 	persistence_cache      contracts.CacheInterface
+	producer      *producer.BlacklistProducer
 }
 
 func NewBlackListService(
@@ -24,6 +26,7 @@ func NewBlackListService(
 	usecaseRemoveBlacklist blacklist.RemoveBlackListInterface,
 	register_audit contracts.AuditLoggerInterface,
 	persistence_cache contracts.CacheInterface,
+	producer      *producer.BlacklistProducer,
 ) *BlacklistService {
 	return &BlacklistService{
 		usecaseCreateBlacklist: usecaseCreateBlacklist,
@@ -31,6 +34,7 @@ func NewBlackListService(
 		usecaseRemoveBlacklist: usecaseRemoveBlacklist,
 		register_audit:         register_audit,
 		persistence_cache:      persistence_cache,
+		producer: producer,
 	}
 }
 
@@ -62,6 +66,9 @@ func (s *BlacklistService) AddBlacklist(requestInput dto.BlacklistInput) error {
 	key_cache := s.generate_key_cache(blacklistEntitty.GetUserIdentifier(), blacklistEntitty.GetEventId())
 	err = s.persistence_cache.SetCache(ctx, key_cache, logDetails, nil)
 	log.Println(fmt.Printf("result action set cache %v", err))
+
+	s.producer.NotifyBlacklist(*blacklistEntitty)
+
 	log.Println("Finish completed add blacklist")
 	return nil
 }

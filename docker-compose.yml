@@ -29,10 +29,27 @@ services:
     networks:
       - app_network
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq_container
+    restart: always
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+    ports:
+      - "5672:5672" # Porta do protocolo AMQP
+      - "15672:15672" # Porta do painel de gerenciamento
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - app_network
+
 volumes:
   redis_data:
     driver: local
   postgres_data:
+    driver: local
+  rabbitmq_data:
     driver: local
 
 networks:

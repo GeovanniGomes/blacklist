@@ -3,12 +3,15 @@ package application
 import (
 	"context"
 	"fmt"
+	"os"
 	"testing"
 
 	"github.com/GeovanniGomes/blacklist/internal/application/dto"
 	"github.com/GeovanniGomes/blacklist/internal/application/service"
 	"github.com/GeovanniGomes/blacklist/internal/application/usecase"
 	"github.com/GeovanniGomes/blacklist/internal/infrastructure/contracts"
+	"github.com/GeovanniGomes/blacklist/internal/infrastructure/queue"
+	"github.com/GeovanniGomes/blacklist/internal/infrastructure/queue/producer"
 	repository_redis "github.com/GeovanniGomes/blacklist/internal/infrastructure/repossitory"
 	"github.com/GeovanniGomes/blacklist/internal/infrastructure/repossitory/audit"
 	"github.com/GeovanniGomes/blacklist/internal/infrastructure/repossitory/blacklist"
@@ -32,23 +35,30 @@ func SetupRunTest(t *testing.T) (*service.BlacklistService, contracts.DatabaseRe
 		t.Fatal(err)
 	}
 
+	url := os.Getenv("CONNECTION_STRING_BROKEN_QUEUE")
+	rabbitQueue := queue.NewRabbitMQQueue(url)
+	dispatcher := queue.NewDispatcher(rabbitQueue)
+	blacklistProducer := producer.NewBlacklistProducer(dispatcher)
+
 	return service.NewBlackListService(
 		usecaseAddBlacklist,
 		usecaseCheckBlacklist,
 		usecaseRemoveBlacklist,
 		register_audit, persistence_cache,
+		blacklistProducer,
 	), interface_database, persistence_cache
+
 }
 func TestAddBlackListService(t *testing.T) {
 	blacklitervice, interface_database, _ := SetupRunTest(t)
-	eventId :=  uuid.NewV4().String()
+	eventId := uuid.NewV4().String()
 	requestInput := dto.BlacklistInput{
 		EventId:        eventId,
 		UserIdentifier: 10,
 		Scope:          "global",
 		BlockedUntil:   nil,
 		Reason:         "Nao paga mensalidade",
-		Document: "101101101101",
+		Document:       "101101101101",
 	}
 	err := blacklitervice.AddBlacklist(requestInput)
 	require.Nil(t, err)
@@ -69,30 +79,29 @@ func TestAddBlackListService(t *testing.T) {
 func TestCheckBlackListService(t *testing.T) {
 	ctx := context.Background()
 	blacklitervice, _, persistence_cache := SetupRunTest(t)
-	eventId :=  uuid.NewV4().String()
-	userIdentifier :=10
+	eventId := uuid.NewV4().String()
+	userIdentifier := 10
 	requestInput := dto.BlacklistInput{
 		EventId:        eventId,
 		UserIdentifier: userIdentifier,
 		Scope:          "global",
 		BlockedUntil:   nil,
 		Reason:         "Nao paga mensalidade",
-		Document: "101101101101",
+		Document:       "101101101101",
 	}
 	err := blacklitervice.AddBlacklist(requestInput)
 	require.Nil(t, err)
 
-	requestInputCheck :=dto.BlacklistInputCheck{
+	requestInputCheck := dto.BlacklistInputCheck{
 		UserIdentifier: userIdentifier,
-		EventId: eventId,
-	} 
+		EventId:        eventId,
+	}
 	result, err := blacklitervice.CheckBlacklist(requestInputCheck)
 	require.Nil(t, err)
 
 	key := fmt.Sprintf("%v_%v", userIdentifier, eventId)
 	detailCache, err := persistence_cache.GetCache(ctx, key)
 	require.Nil(t, err)
-	
 
 	require.Equal(t, result.IsBlocked, detailCache["is_blocked"])
 	require.Equal(t, result.Reason, detailCache["reason"])
@@ -101,26 +110,26 @@ func TestCheckBlackListService(t *testing.T) {
 func TestRemokBlackListService(t *testing.T) {
 	ctx := context.Background()
 	blacklitervice, interface_database, persistence_cache := SetupRunTest(t)
-	eventId :=  uuid.NewV4().String()
-	userIdentifier :=10
+	eventId := uuid.NewV4().String()
+	userIdentifier := 10
 	requestInput := dto.BlacklistInput{
 		EventId:        eventId,
 		UserIdentifier: userIdentifier,
 		Scope:          "global",
 		BlockedUntil:   nil,
 		Reason:         "Nao paga mensalidade",
-		Document: "101101101101",
+		Document:       "101101101101",
 	}
 	err := blacklitervice.AddBlacklist(requestInput)
 	require.Nil(t, err)
 
-	requestInputRemove :=dto.BlacklistInputRemove{
+	requestInputRemove := dto.BlacklistInputRemove{
 		UserIdentifier: userIdentifier,
-		EventId: eventId,
-	} 
+		EventId:        eventId,
+	}
 	err = blacklitervice.RemoveBlacklist(requestInputRemove)
 	require.Nil(t, err)
-	
+
 	rows, err := interface_database.SelectQuery("SELECT reason FROM blacklist WHERE event_id = $1 and is_active = $2", eventId, true)
 	require.Nil(t, err)
 	defer rows.Close()
@@ -130,5 +139,5 @@ func TestRemokBlackListService(t *testing.T) {
 	key := fmt.Sprintf("%v_%v", userIdentifier, eventId)
 	_, err = persistence_cache.GetCache(ctx, key)
 	require.NotNil(t, err)
-	require.Equal(t, fmt.Sprintf("key %v not found in cache", key),err.Error())
+	require.Equal(t, fmt.Sprintf("key %v not found in cache", key), err.Error())
 }
