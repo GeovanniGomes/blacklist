@@ -40,7 +40,7 @@ func (h *BlackListHanhler) addToBlacklist(c *gin.Context) {
 	}
 
 	if err := h.serviceBlacklist.AddBlacklist(entry); err != nil {
-		c.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusCreated, gin.H{"message": "Added to blacklist"})
@@ -66,9 +66,9 @@ func (h *BlackListHanhler) removeBlacklist(c *gin.Context) {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
 		return
 	}
-	if err := h.serviceBlacklist.RemoveBlacklist(entry); err !=nil {
+	if err := h.serviceBlacklist.RemoveBlacklist(entry); err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusNoContent, gin.H{"message":""})
+	c.JSON(http.StatusNoContent, gin.H{"message": ""})
 }

@@ -41,6 +41,18 @@ func NewBlackListService(
 func (s *BlacklistService) AddBlacklist(requestInput dto.BlacklistInput) error {
 	log.Printf("Start add blacklist witth data: %v %v", requestInput.UserIdentifier, requestInput.EventId)
 	ctx := context.Background()
+
+	result, err := s.CheckBlacklist(dto.BlacklistInputCheck{
+		UserIdentifier: requestInput.UserIdentifier,
+		EventId:        requestInput.EventId,
+	})
+	if err != nil {
+		return err
+	}
+	if result.IsBlocked {
+		return fmt.Errorf("there is already a blacklist with the user and the event entered")
+	}
+
 	blacklistEntitty, err := s.usecaseCreateBlacklist.Execute(
 		requestInput.UserIdentifier,
 		requestInput.EventId,
