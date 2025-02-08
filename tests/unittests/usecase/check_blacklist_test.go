@@ -13,13 +13,14 @@ func TestCheckBlacklist(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockCheckBlacklist := check_mock.NewMockIBlackListRepository(ctrl)
-	mockCheckBlacklist.EXPECT().Check(gomock.Any(), gomock.Any()).Return(true, "Fraude detectada").AnyTimes()
+	mockCheckBlacklist.EXPECT().Check(gomock.Any(), gomock.Any()).Return( "Fraude detectada", nil).AnyTimes()
 	usecase := new_black_list_usecase.NewCheckBlacklist(mockCheckBlacklist)
 
-	blocked, mesage := usecase.Execute(10, "event_id")
-	if blocked != true {
-		t.Errorf("Expected true, got %v", blocked)
+	mesage, err := usecase.Execute(10, "event_id")
+	if err != nil {
+		t.Errorf("Expected nil, got %v", err.Error())
 	}
+
 	if mesage != "Fraude detectada" {
 		t.Errorf("Expected 'Fraude detectada', got %v", mesage)
 	}

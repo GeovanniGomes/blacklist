@@ -44,9 +44,9 @@ func TestCheckBlackList(t *testing.T) {
 	require.Nil(t, err)
 	repositoryBlacklist.Add(prepareBlacklist)
 
-	result, reason := repositoryBlacklist.Check(prepareBlacklist.GetUserIdentifier(), prepareBlacklist.GetEventId())
+	reason, err := repositoryBlacklist.Check(prepareBlacklist.GetUserIdentifier(), prepareBlacklist.GetEventId())
 
-	require.Equal(t, result, true)
+	require.Nil(t, err)
 	require.Equal(t, reason, "Fradude identificada")
 }
 
@@ -63,8 +63,8 @@ func TestRemoveBlackList(t *testing.T) {
 
 	err = repositoryBlacklist.Remove(prepareBlacklist.GetUserIdentifier(), prepareBlacklist.GetEventId())
 	require.Nil(t, err)
-	result, reason := repositoryBlacklist.Check(prepareBlacklist.GetUserIdentifier(), prepareBlacklist.GetEventId())
+	reason, err := repositoryBlacklist.Check(prepareBlacklist.GetUserIdentifier(), prepareBlacklist.GetEventId())
 
-	require.Equal(t, result, false)
+	require.Nil(t, err)
 	require.Equal(t, reason, "")
 }

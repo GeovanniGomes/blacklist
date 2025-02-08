@@ -62,7 +62,7 @@ func (s *BlacklistService) AddBlacklist(requestInput interfaces.BlacklistInput) 
 		requestInput.BlockedUntil,
 	)
 	if err != nil {
-		return err
+		return fmt.Errorf("the operation to add to the blacklist could not be completed, please try again later")
 	}
 	logDetails := map[string]interface{}{
 		"scope":         blacklistEntitty.GetScope(),
@@ -112,9 +112,17 @@ func (s *BlacklistService) CheckBlacklist(requestInput interfaces.BlacklistInput
 		return interfaces.BlacklistOutputCheck{IsBlocked: is_blocked, Reason: reason}, nil
 	}
 
-	result, reason := s.usecaseCheckBlacklist.Execute(userIdentifier, eventId)
+	reason, err := s.usecaseCheckBlacklist.Execute(userIdentifier, eventId)
 
-	return interfaces.BlacklistOutputCheck{IsBlocked: result, Reason: reason}, nil
+	if err !=nil{
+		return interfaces.BlacklistOutputCheck{},err
+	}
+	var isBlocked = false
+
+	if reason != ""{
+		isBlocked = true
+	}
+	return interfaces.BlacklistOutputCheck{IsBlocked: isBlocked, Reason: reason}, nil
 
 }
 

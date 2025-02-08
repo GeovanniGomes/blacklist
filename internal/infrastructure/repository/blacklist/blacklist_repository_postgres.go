@@ -1,7 +1,7 @@
 package blacklist
 
 import (
-	"fmt"
+	"errors"
 	"log"
 	"sync"
 
@@ -40,13 +40,13 @@ func (b *BlackListRepositoryPostgres) Add(blacklist *entity.BlackList) error {
 		},
 	)
 	if err != nil {
-		log.Fatalf("Error peersiste data blacklist: %v", err)
+		log.Printf("Error peersiste data blacklist: %v", err)
 		return err
 	}
 	return nil
 }
 
-func (b *BlackListRepositoryPostgres) Check(userIdentifier int, evendId string) (bool, string) {
+func (b *BlackListRepositoryPostgres) Check(userIdentifier int, evendId string) (string, error ) {
 	b.mutex.Lock()
 	defer b.mutex.Unlock()
 
@@ -54,18 +54,18 @@ func (b *BlackListRepositoryPostgres) Check(userIdentifier int, evendId string) 
 
 	if err != nil {
 		log.Fatalf("Error querying blacklist: %v", err)
-		panic(fmt.Sprintf("Error check in database: %v, %v", userIdentifier, evendId))
+		return "", errors.New("unable to complete blacklist check")
 	}
 	defer rows.Close()
 
 	var reason string
 	if rows.Next() {
 		if err := rows.Scan(&reason); err != nil {
-			return false, ""
+			return "", errors.New("unable to complete blacklist check")
 		}
-		return true, reason
+		return reason, nil
 	}
-	return false, ""
+	return "", nil
 
 }
 

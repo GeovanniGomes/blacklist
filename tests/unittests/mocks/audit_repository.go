@@ -34,7 +34,7 @@ func (m *MockIAuditLogger) EXPECT() *MockIAuditLoggerMockRecorder {
 }
 
 // LogAction mocks base method.
-func (m *MockIAuditLogger) LogAction(userIdentifier int, eventId, action string, details *map[string]interface{}) error {
+func (m *MockIAuditLogger) LogAction(userIdentifier int, eventId, action string, details map[string]interface{}) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "LogAction", userIdentifier, eventId, action, details)
 	ret0, _ := ret[0].(error)

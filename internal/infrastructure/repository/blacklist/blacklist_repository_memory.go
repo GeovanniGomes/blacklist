@@ -16,13 +16,13 @@ func (black_list_repository *BlackListRepositoryMemory) Add(blacklist *entity.Bl
 	return nil
 }
 
-func (black_list_repository *BlackListRepositoryMemory) Check(userIndentifier int, evendId string) (bool, string) {
+func (black_list_repository *BlackListRepositoryMemory) Check(userIndentifier int, evendId string) (string, error) {
 	for _, blacklist := range black_list_repository.collection_blacklist {
 		if blacklist.GetUserIdentifier() == userIndentifier && blacklist.GetEventId() == evendId {
-			return false, blacklist.GetReason()
+			return blacklist.GetReason(), nil
 		}
 	}
-	return true, ""
+	return "", nil
 }
 
 func (black_list_repository *BlackListRepositoryMemory) Remove(userIndentifier int, eventId string) error {

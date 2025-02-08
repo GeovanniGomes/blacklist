@@ -19,13 +19,12 @@ func TestCheckBlackList(t *testing.T) {
 	blacklistEntity, err := usecaseAddBacklist.Execute(10, uuid.NewV4().String(), "Fraude detectada", "10101010101", entity.GLOBAL, nil)
 	require.Nil(t, err)
 
-	result, message := usecaseCheckBacklist.Execute(blacklistEntity.GetUserIdentifier(), blacklistEntity.GetEventId())
-	require.NotNil(t, result)
+	message, err := usecaseCheckBacklist.Execute(blacklistEntity.GetUserIdentifier(), blacklistEntity.GetEventId())
+	require.Nil(t, err)
 	require.NotNil(t, message)
-	require.Equal(t, result, false)
 	require.Equal(t, message, "Fraude detectada")
 
-	result, message = usecaseCheckBacklist.Execute(blacklistEntity.GetUserIdentifier(), uuid.NewV4().String())
-	require.Equal(t, result, true)
+	message, err = usecaseCheckBacklist.Execute(blacklistEntity.GetUserIdentifier(), uuid.NewV4().String())
+	require.Nil(t, err)
 	require.Equal(t, message, "")
 }

@@ -16,6 +16,6 @@ func NewCheckBlacklist(
 	return &UsecaseCheckBlacklist{blacklist_repository: blacklist_repository}
 }
 
-func (c *UsecaseCheckBlacklist) Execute(userIdentifier int, eventId string) (bool, string) {
+func (c *UsecaseCheckBlacklist) Execute(userIdentifier int, eventId string) (string, error) {
 	return c.blacklist_repository.Check(userIdentifier, eventId)
 }

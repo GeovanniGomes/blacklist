@@ -49,11 +49,11 @@ func (mr *MockIBlackListRepositoryMockRecorder) Add(blacklist interface{}) *gomo
 }
 
 // Check mocks base method.
-func (m *MockIBlackListRepository) Check(userIndentifier int, evendId string) (bool, string) {
+func (m *MockIBlackListRepository) Check(userIndentifier int, evendId string) (string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Check", userIndentifier, evendId)
-	ret0, _ := ret[0].(bool)
-	ret1, _ := ret[1].(string)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
