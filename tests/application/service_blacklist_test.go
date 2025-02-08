@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/GeovanniGomes/blacklist/internal/application/dto"
+	"github.com/GeovanniGomes/blacklist/internal/application/interfaces"
 	"github.com/GeovanniGomes/blacklist/internal/application/service"
 	"github.com/GeovanniGomes/blacklist/internal/application/usecase"
 	"github.com/GeovanniGomes/blacklist/internal/infrastructure/contracts"

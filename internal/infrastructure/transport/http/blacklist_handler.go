@@ -3,7 +3,7 @@ package http
 import (
 	"net/http"
 
-	"github.com/GeovanniGomes/blacklist/internal/application/dto"
+	"github.com/GeovanniGomes/blacklist/internal/application/interfaces"
 	"github.com/GeovanniGomes/blacklist/internal/application/service"
 	"github.com/GeovanniGomes/blacklist/internal/infrastructure/depedence_injector"
 	"github.com/gin-gonic/gin"

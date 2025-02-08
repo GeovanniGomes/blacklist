@@ -6,7 +6,7 @@ import (
 	"log"
 
 	"github.com/GeovanniGomes/blacklist/internal/application/contracts/usecase/blacklist"
-	"github.com/GeovanniGomes/blacklist/internal/application/dto"
+	"github.com/GeovanniGomes/blacklist/internal/application/interfaces"
 	"github.com/GeovanniGomes/blacklist/internal/infrastructure/contracts"
 	"github.com/GeovanniGomes/blacklist/internal/infrastructure/queue/producer"
 )
