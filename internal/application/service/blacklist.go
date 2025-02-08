@@ -38,11 +38,11 @@ func NewBlackListService(
 	}
 }
 
-func (s *BlacklistService) AddBlacklist(requestInput dto.BlacklistInput) error {
+func (s *BlacklistService) AddBlacklist(requestInput interfaces.BlacklistInput) error {
 	log.Printf("Start add blacklist witth data: %v %v", requestInput.UserIdentifier, requestInput.EventId)
 	ctx := context.Background()
 
-	result, err := s.CheckBlacklist(dto.BlacklistInputCheck{
+	result, err := s.CheckBlacklist(interfaces.BlacklistInputCheck{
 		UserIdentifier: requestInput.UserIdentifier,
 		EventId:        requestInput.EventId,
 	})
@@ -85,7 +85,7 @@ func (s *BlacklistService) AddBlacklist(requestInput dto.BlacklistInput) error {
 	return nil
 }
 
-func (s *BlacklistService) CheckBlacklist(requestInput dto.BlacklistInputCheck) (dto.BlacklistOutputCheck, error) {
+func (s *BlacklistService) CheckBlacklist(requestInput interfaces.BlacklistInputCheck) (interfaces.BlacklistOutputCheck, error) {
 	userIdentifier, eventId := requestInput.UserIdentifier, requestInput.EventId
 	log.Printf("Start check blacklist witth data: %v %v", requestInput.UserIdentifier, requestInput.EventId)
 
@@ -109,16 +109,16 @@ func (s *BlacklistService) CheckBlacklist(requestInput dto.BlacklistInputCheck) 
 		if err != nil {
 			log.Println(err.Error())
 		}
-		return dto.BlacklistOutputCheck{IsBlocked: is_blocked, Reason: reason}, nil
+		return interfaces.BlacklistOutputCheck{IsBlocked: is_blocked, Reason: reason}, nil
 	}
 
 	result, reason := s.usecaseCheckBlacklist.Execute(userIdentifier, eventId)
 
-	return dto.BlacklistOutputCheck{IsBlocked: result, Reason: reason}, nil
+	return interfaces.BlacklistOutputCheck{IsBlocked: result, Reason: reason}, nil
 
 }
 
-func (s *BlacklistService) RemoveBlacklist(requestInput dto.BlacklistInputRemove) error {
+func (s *BlacklistService) RemoveBlacklist(requestInput interfaces.BlacklistInputRemove) error {
 	userIdentifier, eventId := requestInput.UserIdentifier, requestInput.EventId
 
 	log.Printf("Start remove blacklist witth data: %v %v", userIdentifier, eventId)

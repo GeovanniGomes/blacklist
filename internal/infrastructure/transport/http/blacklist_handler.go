@@ -32,7 +32,7 @@ func (h *BlackListHanhler) BlacklistRoutes() {
 }
 
 func (h *BlackListHanhler) addToBlacklist(c *gin.Context) {
-	var entry dto.BlacklistInput
+	var entry interfaces.BlacklistInput
 
 	if err := c.ShouldBindJSON(&entry); err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
@@ -47,7 +47,7 @@ func (h *BlackListHanhler) addToBlacklist(c *gin.Context) {
 }
 
 func (h *BlackListHanhler) checkBlacklist(c *gin.Context) {
-	var entry dto.BlacklistInputCheck
+	var entry interfaces.BlacklistInputCheck
 	if err := c.ShouldBindJSON(&entry); err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
 		return
@@ -61,7 +61,7 @@ func (h *BlackListHanhler) checkBlacklist(c *gin.Context) {
 }
 
 func (h *BlackListHanhler) removeBlacklist(c *gin.Context) {
-	var entry dto.BlacklistInputRemove
+	var entry interfaces.BlacklistInputRemove
 	if err := c.ShouldBindJSON(&entry); err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
 		return

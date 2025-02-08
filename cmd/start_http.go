@@ -5,9 +5,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-
-func StartHTTP(){
-	r := gin.Default()
+func StartHTTP() {
+	r := gin.Default()	
 	routes.SetupRoutes(r)
 	r.Run(":8000")
 }

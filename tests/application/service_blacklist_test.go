@@ -52,7 +52,7 @@ func SetupRunTest(t *testing.T) (*service.BlacklistService, contracts.IDatabaseR
 func TestAddBlackListService(t *testing.T) {
 	blacklitervice, interface_database, _ := SetupRunTest(t)
 	eventId := uuid.NewV4().String()
-	requestInput := dto.BlacklistInput{
+	requestInput := interfaces.BlacklistInput{
 		EventId:        eventId,
 		UserIdentifier: 10,
 		Scope:          "global",
@@ -81,7 +81,7 @@ func TestCheckBlackListService(t *testing.T) {
 	blacklitervice, _, persistence_cache := SetupRunTest(t)
 	eventId := uuid.NewV4().String()
 	userIdentifier := 10
-	requestInput := dto.BlacklistInput{
+	requestInput := interfaces.BlacklistInput{
 		EventId:        eventId,
 		UserIdentifier: userIdentifier,
 		Scope:          "global",
@@ -92,7 +92,7 @@ func TestCheckBlackListService(t *testing.T) {
 	err := blacklitervice.AddBlacklist(requestInput)
 	require.Nil(t, err)
 
-	requestInputCheck := dto.BlacklistInputCheck{
+	requestInputCheck := interfaces.BlacklistInputCheck{
 		UserIdentifier: userIdentifier,
 		EventId:        eventId,
 	}
@@ -112,7 +112,7 @@ func TestRemokBlackListService(t *testing.T) {
 	blacklitervice, interface_database, persistence_cache := SetupRunTest(t)
 	eventId := uuid.NewV4().String()
 	userIdentifier := 10
-	requestInput := dto.BlacklistInput{
+	requestInput := interfaces.BlacklistInput{
 		EventId:        eventId,
 		UserIdentifier: userIdentifier,
 		Scope:          "global",
@@ -123,7 +123,7 @@ func TestRemokBlackListService(t *testing.T) {
 	err := blacklitervice.AddBlacklist(requestInput)
 	require.Nil(t, err)
 
-	requestInputRemove := dto.BlacklistInputRemove{
+	requestInputRemove := interfaces.BlacklistInputRemove{
 		UserIdentifier: userIdentifier,
 		EventId:        eventId,
 	}
