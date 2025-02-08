@@ -20,7 +20,7 @@ services:
     environment:
       POSTGRES_USER: applicattion_blackist
       POSTGRES_PASSWORD: applicattion_blackist
-      POSTGRES_DB: blackist
+      POSTGRES_DB: blacklist
     ports:
       - "5432:5432"
     volumes:

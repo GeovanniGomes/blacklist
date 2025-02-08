@@ -5,7 +5,7 @@ import (
 
 	"github.com/GeovanniGomes/blacklist/internal/application/usecase"
 	"github.com/GeovanniGomes/blacklist/internal/domain/entity"
-	"github.com/GeovanniGomes/blacklist/internal/infrastructure/repossitory/blacklist"
+	"github.com/GeovanniGomes/blacklist/internal/infrastructure/repository/blacklist"
 
 	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/require"

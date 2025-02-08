@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/GeovanniGomes/blacklist/internal/infrastructure/contracts"
-	repository "github.com/GeovanniGomes/blacklist/internal/infrastructure/repossitory"
+	repository "github.com/GeovanniGomes/blacklist/internal/infrastructure/repository"
 )
 
 func SetupPostgresContainer(t *testing.T) (contracts.IDatabaseRelational, func()) {

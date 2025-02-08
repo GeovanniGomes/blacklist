@@ -63,9 +63,9 @@ func (b *BlackListRepositoryPostgres) Check(userIdentifier int, evendId string) 
 		if err := rows.Scan(&reason); err != nil {
 			return false, ""
 		}
-		return false, reason
+		return true, reason
 	}
-	return true, ""
+	return false, ""
 
 }
 

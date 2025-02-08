@@ -7,6 +7,8 @@ import (
 	"github.com/streadway/amqp"
 )
 
+var _ contracts.IQueue = (*RabbitMQQueue)(nil)
+
 type RabbitMQQueue struct {
 	conn    *amqp.Connection
 	channel *amqp.Channel

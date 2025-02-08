@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/GeovanniGomes/blacklist/internal/domain/entity"
-	"github.com/GeovanniGomes/blacklist/internal/infrastructure/repossitory/blacklist"
+	"github.com/GeovanniGomes/blacklist/internal/infrastructure/repository/blacklist"
 	"github.com/GeovanniGomes/blacklist/tests"
 	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/require"
