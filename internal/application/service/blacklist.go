@@ -114,12 +114,12 @@ func (s *BlacklistService) CheckBlacklist(requestInput interfaces.BlacklistInput
 
 	reason, err := s.usecaseCheckBlacklist.Execute(userIdentifier, eventId)
 
-	if err !=nil{
-		return interfaces.BlacklistOutputCheck{},err
+	if err != nil {
+		return interfaces.BlacklistOutputCheck{}, err
 	}
 	var isBlocked = false
 
-	if reason != ""{
+	if reason != "" {
 		isBlocked = true
 	}
 	return interfaces.BlacklistOutputCheck{IsBlocked: isBlocked, Reason: reason}, nil
@@ -139,7 +139,7 @@ func (s *BlacklistService) RemoveBlacklist(requestInput interfaces.BlacklistInpu
 	}
 	err = s.persistence_cache.DeleteCache(ctx, key_cache)
 	if err != nil {
-		panic(err)
+		log.Printf("errore in delete cache %v", err)
 	}
 	return nil
 
