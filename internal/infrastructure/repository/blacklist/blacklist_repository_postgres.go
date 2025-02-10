@@ -2,8 +2,10 @@ package blacklist
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"sync"
+	"time"
 
 	repositoty "github.com/GeovanniGomes/blacklist/internal/application/contracts/repository"
 	"github.com/GeovanniGomes/blacklist/internal/domain/entity"
@@ -15,6 +17,47 @@ var _ repositoty.IBlackListRepository = (*BlackListRepositoryPostgres)(nil)
 type BlackListRepositoryPostgres struct {
 	mutex       sync.Mutex
 	persistence contracts.IDatabaseRelational
+}
+
+func (b *BlackListRepositoryPostgres) FetchBlacklistEntries(startDate, endDate time.Time) ([]entity.BlackList, error) {
+	factory := entity.FactoryEntity{}
+	query := `SELECT * FROM blacklist WHERE created_at BETWEEN $1 AND $2 and is_active = $3`
+	rows, err := b.persistence.SelectQuery(query, startDate, endDate, true)
+	if err != nil {
+		log.Printf("error fetch blacklist: %v", err)
+		return nil, errors.New("unable to obtain blacklist data")
+	}
+	defer rows.Close()
+
+	var blacklists []entity.BlackList
+	for rows.Next() {
+		var (
+			id             *string
+			eventId        string
+			createdAt      time.Time
+			reason         string
+			document       string
+			scope          string
+			userIdentifier int
+			blockedUntil   *time.Time
+			blockedType    string
+			isActive       bool
+		)
+		if err := rows.Scan(&id, &eventId, &createdAt, &reason, &document, &scope, &userIdentifier, &blockedUntil, &blockedType, &isActive); err != nil {
+			return nil, fmt.Errorf("erro ao escanear linha: %v", err)
+		}
+		blacklist, err := factory.FactoryNewBlacklist(eventId, reason, document, scope, blockedType, userIdentifier, isActive, blockedUntil, &createdAt, id)
+		if err != nil {
+			return nil, fmt.Errorf("erro ao criar entidade BlackList: %v", err)
+		}
+		blacklists = append(blacklists, *blacklist)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("erro ao iterar sobre os resultados: %v", err)
+	}
+
+	return blacklists, nil
 }
 
 func NewBlackListRepositoryPostgres(persistence contracts.IDatabaseRelational) *BlackListRepositoryPostgres {
@@ -46,7 +89,7 @@ func (b *BlackListRepositoryPostgres) Add(blacklist *entity.BlackList) error {
 	return nil
 }
 
-func (b *BlackListRepositoryPostgres) Check(userIdentifier int, evendId string) (string, error ) {
+func (b *BlackListRepositoryPostgres) Check(userIdentifier int, evendId string) (string, error) {
 	b.mutex.Lock()
 	defer b.mutex.Unlock()
 

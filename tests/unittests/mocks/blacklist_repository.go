@@ -6,6 +6,7 @@ package mock_repositoty
 
 import (
 	reflect "reflect"
+	time "time"
 
 	entity "github.com/GeovanniGomes/blacklist/internal/domain/entity"
 	gomock "github.com/golang/mock/gomock"
@@ -61,6 +62,21 @@ func (m *MockIBlackListRepository) Check(userIndentifier int, evendId string) (s
 func (mr *MockIBlackListRepositoryMockRecorder) Check(userIndentifier, evendId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Check", reflect.TypeOf((*MockIBlackListRepository)(nil).Check), userIndentifier, evendId)
+}
+
+// FetchBlacklistEntries mocks base method.
+func (m *MockIBlackListRepository) FetchBlacklistEntries(startDate, endDate time.Time) ([]entity.BlackList, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FetchBlacklistEntries", startDate, endDate)
+	ret0, _ := ret[0].([]entity.BlackList)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FetchBlacklistEntries indicates an expected call of FetchBlacklistEntries.
+func (mr *MockIBlackListRepositoryMockRecorder) FetchBlacklistEntries(startDate, endDate interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchBlacklistEntries", reflect.TypeOf((*MockIBlackListRepository)(nil).FetchBlacklistEntries), startDate, endDate)
 }
 
 // Remove mocks base method.

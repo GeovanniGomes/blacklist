@@ -1,6 +1,8 @@
 package main
 
+import "github.com/GeovanniGomes/blacklist/cmd/setup"
+
 func main() {
-	StartQueueConsumers()
-	StartHTTP()
+	setup.StartQueueConsumers()
+	setup.StartHTTP()
 }

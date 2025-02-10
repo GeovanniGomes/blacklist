@@ -29,18 +29,18 @@ type BlackList struct {
 	isActive       bool
 }
 
-func NewBlackList(enventId, reason, document, scope, blockedType string, userIdentifier int, blockedUntil *time.Time) *BlackList {
+func NewBlackList(eventId, reason, document, scope, blockedType string, userIdentifier int, blockedUntil *time.Time,  createdAt time.Time, id string, isActive bool) *BlackList {
 	return &BlackList{
-		id:             uuid.NewV4().String(),
-		eventId:        enventId,
+		id:            id,
+		eventId:        eventId,
 		reason:         reason,
 		document:       document,
 		scope:          scope,
-		createdAt:      time.Now(),
+		createdAt:      createdAt,
 		userIdentifier: userIdentifier,
 		blockedUntil:   blockedUntil,
 		blockedType:    blockedType,
-		isActive:       true,
+		isActive:       isActive,
 	}
 }
 

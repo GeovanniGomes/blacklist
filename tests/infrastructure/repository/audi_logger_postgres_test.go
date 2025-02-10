@@ -13,13 +13,16 @@ import (
 
 func TestAddLogger(t *testing.T){
 	interface_database, teardown := tests.SetupPostgresContainer(t)
+	factory := entity.FactoryEntity{}
 	defer teardown()
 
 	repositoryBlacklist := audit.NewDBAuditLogger(interface_database)
-	prepareBlacklist := entity.NewBlackList(uuid.NewV4().String(),"Fradude identificada","email@gmail.com", entity.GLOBAL, entity.PERMANENT,10, nil)
+	prepareBlacklist, err := factory.FactoryNewBlacklist(uuid.NewV4().String(),"Fradude identificada","email@gmail.com",entity.GLOBAL, entity.PERMANENT,10,true,nil,nil,nil)
 
-	err := prepareBlacklist.IsValid()
+	require.Nil(t,err)
+	err = prepareBlacklist.IsValid()
 	require.Nil(t, err)
+
 	logDetails := map[string]interface{}{
 		"scope":         prepareBlacklist.GetScope(),
 		"blocked_type":  prepareBlacklist.GetBlockedType(),

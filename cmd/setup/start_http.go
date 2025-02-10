@@ -1,4 +1,4 @@
-package main
+package setup
 
 import (
 	"github.com/GeovanniGomes/blacklist/internal/infrastructure/transport/http/routes"

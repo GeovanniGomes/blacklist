@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"os"
+	"time"
 
 	"github.com/GeovanniGomes/blacklist/internal/domain/entity"
 	"github.com/GeovanniGomes/blacklist/internal/infrastructure/queue"
@@ -32,4 +33,14 @@ func (p *BlacklistProducer) NotifyBlacklist(blacklist entity.BlackList) {
 	p.dispatcher.Dispatch(os.Getenv("QUEUE_BLACKLIST"), "blacklist.created", string(message))
 
 	log.Printf("Mensagem publicada na fila: %s", message)
+}
+
+func (p *BlacklistProducer) GenerateReport(startDate, endDate time.Time) {
+
+	detailMessage := map[string]interface{}{
+		"start_date": startDate,
+		"end_date":   endDate,
+	}
+	message, _ := json.Marshal(detailMessage)
+	p.dispatcher.Dispatch(os.Getenv("QUEUE_REPORT_BLACKLIST"), "blacklist.report", string(message))
 }
