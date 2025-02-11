@@ -24,7 +24,7 @@ func NewBlacklistReportConsumer(queue contracts.IQueue, blacklist_repository rep
 
 func (c *BlacklistReportConsumer) HandleMessage() func([]byte) error {
 	return func(message []byte) error {
-		log.Printf("Processando mensagem da blacklist: %s", message)
+		log.Printf("Process message blacklist: %s", message)
 		cwd, _ := os.Getwd()
 		outputDir := filepath.Join(cwd, "..", "internal", "output")
 		currentDate := time.Now()
@@ -38,7 +38,7 @@ func (c *BlacklistReportConsumer) HandleMessage() func([]byte) error {
 
 		data, ok := msg["data"].(map[string]interface{})
 		if !ok {
-			log.Println("Erro ao acessar o campo 'data'")
+			log.Println("Error accessing the field 'data'")
 			return nil
 		}
 
@@ -53,6 +53,11 @@ func (c *BlacklistReportConsumer) HandleMessage() func([]byte) error {
 		}
 
 		blacklistToReports, err := c.blacklist_repository.FetchBlacklistEntries(startDate, endDate)
+
+		if len(blacklistToReports) == 0 {
+			log.Print("Empty list to generate report")
+		}
+
 		if err != nil {
 			return err
 		}
@@ -72,7 +77,7 @@ func (c *BlacklistReportConsumer) HandleMessage() func([]byte) error {
 		}
 
 		for i, evento := range blacklistToReports {
-			row := i + 2 // Começa na linha 2 (1 é o cabeçalho)
+			row := i + 2
 
 			f.SetCellValue(sheetName, fmt.Sprintf("%s%d", columnMap["Data Criacao"], row), evento.GetCreatedAt().Format("2006-01-02 15:04:05"))
 			f.SetCellValue(sheetName, fmt.Sprintf("%s%d", columnMap["ID Evento"], row), evento.GetEventId())
@@ -85,7 +90,7 @@ func (c *BlacklistReportConsumer) HandleMessage() func([]byte) error {
 
 		fileName := fmt.Sprintf("%v/%v.xlsx", outputDir, dateGenetarion)
 		if err := f.SaveAs(fileName); err != nil {
-			log.Printf("Erro ao salvar o arquivo: %v", err)
+			log.Printf("Erro save file : %v", err)
 		}
 
 		fmt.Printf("File Excel: %v.xlsx", dateGenetarion)

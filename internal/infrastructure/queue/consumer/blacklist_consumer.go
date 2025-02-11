@@ -16,7 +16,7 @@ func NewBlacklistConsumer(queue contracts.IQueue) *BlacklistConsumer {
 
 func (c *BlacklistConsumer) HandleMessage() func([]byte) error {
 	return func(message []byte) error {
-		log.Printf("Processando mensagem da blacklist: %s", message)
-		return nil // Caso precise retornar erro, pode tratar aqui
+		log.Printf("Process menssage blacklist: %s", message)
+		return nil
 	}
 }

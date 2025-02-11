@@ -86,6 +86,16 @@ func (h *BlackListHanhler) generateReportBlacklist(c *gin.Context) {
 
 	startDate = time.Date(startDate.Year(), startDate.Month(), startDate.Day(), 0, 0, 0, 0, startDate.Location())
 	endDate = time.Date(endDate.Year(), endDate.Month(), endDate.Day(), 23, 59, 59, 0, startDate.Location())
+	// if (blacklist.GetCreatedAt().After(startDate) || blacklist.GetCreatedAt().Equal(startDate)) && (blacklist.GetCreatedAt().Before(endDate) || blacklist.GetCreatedAt().Equal(endDate))
+
+	if startDate.After(endDate) {
+		c.JSON(http.StatusNotAcceptable, gin.H{"error": "Start date is longer than the end date"})
+		return
+	}
+	if endDate.Before(startDate) {
+		c.JSON(http.StatusNotAcceptable, gin.H{"error": "End date is longer than the start date"})
+		return
+	}
 
 	h.serviceBlacklist.SendGenerateReport(startDate, endDate)
 

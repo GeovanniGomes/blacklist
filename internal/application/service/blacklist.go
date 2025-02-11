@@ -42,7 +42,8 @@ func NewBlackListService(
 func (s *BlacklistService) AddBlacklist(requestInput interfaces.BlacklistInput) error {
 	log.Printf("Start add blacklist witth data: %v %v", requestInput.UserIdentifier, requestInput.EventId)
 	ctx := context.Background()
-
+	var blockedUntil *time.Time
+	blockedUntil = nil
 	result, err := s.CheckBlacklist(interfaces.BlacklistInputCheck{
 		UserIdentifier: requestInput.UserIdentifier,
 		EventId:        requestInput.EventId,
@@ -53,7 +54,11 @@ func (s *BlacklistService) AddBlacklist(requestInput interfaces.BlacklistInput) 
 	if result.IsBlocked {
 		return fmt.Errorf("there is already a blacklist with the user and the event entered")
 	}
-	blockedUntil := requestInput.BlockedUntil.ToTime()
+
+	if requestInput.BlockedUntil != nil {
+		t := requestInput.BlockedUntil.ToTime()
+		blockedUntil = &t
+	}
 
 	blacklistEntitty, err := s.usecaseCreateBlacklist.Execute(
 		requestInput.UserIdentifier,
@@ -61,9 +66,10 @@ func (s *BlacklistService) AddBlacklist(requestInput interfaces.BlacklistInput) 
 		requestInput.Reason,
 		requestInput.Document,
 		requestInput.Scope,
-		&blockedUntil,
+		blockedUntil,
 	)
 	if err != nil {
+		log.Println(err)
 		return fmt.Errorf("the operation to add to the blacklist could not be completed, please try again later")
 	}
 	logDetails := map[string]interface{}{

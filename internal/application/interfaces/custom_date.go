@@ -21,6 +21,7 @@ func (c *CustomDateTime) UnmarshalJSON(b []byte) error {
 }
 
 func (c CustomDateTime) ToTime() time.Time {
+
 	t := time.Time(c)
 	return time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), t.Location())
 }
