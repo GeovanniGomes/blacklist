@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/GeovanniGomes/blacklist/internal/application/contracts/usecase/blacklist"
 	"github.com/GeovanniGomes/blacklist/internal/application/interfaces"
@@ -52,6 +53,7 @@ func (s *BlacklistService) AddBlacklist(requestInput interfaces.BlacklistInput) 
 	if result.IsBlocked {
 		return fmt.Errorf("there is already a blacklist with the user and the event entered")
 	}
+	blockedUntil := requestInput.BlockedUntil.ToTime()
 
 	blacklistEntitty, err := s.usecaseCreateBlacklist.Execute(
 		requestInput.UserIdentifier,
@@ -59,7 +61,7 @@ func (s *BlacklistService) AddBlacklist(requestInput interfaces.BlacklistInput) 
 		requestInput.Reason,
 		requestInput.Document,
 		requestInput.Scope,
-		requestInput.BlockedUntil,
+		&blockedUntil,
 	)
 	if err != nil {
 		return fmt.Errorf("the operation to add to the blacklist could not be completed, please try again later")
@@ -147,4 +149,9 @@ func (s *BlacklistService) RemoveBlacklist(requestInput interfaces.BlacklistInpu
 
 func (s *BlacklistService) generate_key_cache(userIdentifier int, eventId string) string {
 	return fmt.Sprintf("%v_%v", userIdentifier, eventId)
+}
+
+func (s *BlacklistService) SendGenerateReport(startDate, endDate time.Time) {
+	log.Printf("Start send generation report %v and %v", startDate, endDate)
+	s.producer.GenerateReport(startDate, endDate)
 }

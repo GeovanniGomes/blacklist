@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
+	"path/filepath"
 	"time"
 
 	repositoty "github.com/GeovanniGomes/blacklist/internal/application/contracts/repository"
@@ -23,24 +25,32 @@ func NewBlacklistReportConsumer(queue contracts.IQueue, blacklist_repository rep
 func (c *BlacklistReportConsumer) HandleMessage() func([]byte) error {
 	return func(message []byte) error {
 		log.Printf("Processando mensagem da blacklist: %s", message)
+		cwd, _ := os.Getwd()
+		outputDir := filepath.Join(cwd, "..", "internal", "output")
+		currentDate := time.Now()
+		year, month, day := currentDate.Date()
+		dateGenetarion := fmt.Sprintf("%v_%v_%v_%v", year, month, day, currentDate.Second())
 
-		var msg map[string]string
+		var msg map[string]interface{}
 		if err := json.Unmarshal(message, &msg); err != nil {
 			return err
 		}
 
-		startDate, err := time.Parse(time.RFC3339, msg["start_date"])
+		data, ok := msg["data"].(map[string]interface{})
+		if !ok {
+			log.Println("Erro ao acessar o campo 'data'")
+			return nil
+		}
+
+		startDate, err := c.parseDate(data["start_date"].(string))
 		if err != nil {
 			return err
 		}
-		startDate = startDate.Truncate(24 * time.Hour)
 
-		endDate, err := time.Parse(time.RFC3339, msg["end_date"])
+		endDate, err := c.parseDate(data["end_date"].(string))
 		if err != nil {
 			return err
 		}
-
-		endDate = time.Date(endDate.Year(), endDate.Month(), endDate.Day(), 23, 59, 59, 0, endDate.Location())
 
 		blacklistToReports, err := c.blacklist_repository.FetchBlacklistEntries(startDate, endDate)
 		if err != nil {
@@ -48,7 +58,7 @@ func (c *BlacklistReportConsumer) HandleMessage() func([]byte) error {
 		}
 
 		f := excelize.NewFile()
-		sheetName := "Eventos"
+		sheetName := "Blacklist"
 		index, _ := f.NewSheet(sheetName)
 
 		headers := []string{"Data Criacao", "ID Evento", "ID Usuario", "Scopo", "Motivo"}
@@ -61,11 +71,9 @@ func (c *BlacklistReportConsumer) HandleMessage() func([]byte) error {
 			columnMap[h] = col
 		}
 
-		// Inserindo dados na planilha
 		for i, evento := range blacklistToReports {
 			row := i + 2 // Começa na linha 2 (1 é o cabeçalho)
 
-			// Preencher células dinamicamente usando o mapeamento
 			f.SetCellValue(sheetName, fmt.Sprintf("%s%d", columnMap["Data Criacao"], row), evento.GetCreatedAt().Format("2006-01-02 15:04:05"))
 			f.SetCellValue(sheetName, fmt.Sprintf("%s%d", columnMap["ID Evento"], row), evento.GetEventId())
 			f.SetCellValue(sheetName, fmt.Sprintf("%s%d", columnMap["ID Usuario"], row), evento.GetUserIdentifier())
@@ -73,15 +81,22 @@ func (c *BlacklistReportConsumer) HandleMessage() func([]byte) error {
 			f.SetCellValue(sheetName, fmt.Sprintf("%s%d", columnMap["Motivo"], row), evento.GetReason())
 		}
 
-		// Definir a planilha ativa
 		f.SetActiveSheet(index)
 
-		// Salvar o arquivo Excel
-		if err := f.SaveAs("eventos.xlsx"); err != nil {
+		fileName := fmt.Sprintf("%v/%v.xlsx", outputDir, dateGenetarion)
+		if err := f.SaveAs(fileName); err != nil {
 			log.Printf("Erro ao salvar o arquivo: %v", err)
 		}
 
-		fmt.Println("Arquivo Excel criado com sucesso: eventos.xlsx")
-		return nil // Caso precise retornar erro, pode tratar aqui
+		fmt.Printf("File Excel: %v.xlsx", dateGenetarion)
+		return nil
 	}
+}
+
+func (c *BlacklistReportConsumer) parseDate(value string) (time.Time, error) {
+	startDate, err := time.Parse(time.RFC3339, value)
+	if err != nil {
+		return time.Time{}, err
+	}
+	return startDate, nil
 }

@@ -41,6 +41,5 @@ func (p *BlacklistProducer) GenerateReport(startDate, endDate time.Time) {
 		"start_date": startDate,
 		"end_date":   endDate,
 	}
-	message, _ := json.Marshal(detailMessage)
-	p.dispatcher.Dispatch(os.Getenv("QUEUE_REPORT_BLACKLIST"), "blacklist.report", string(message))
+	p.dispatcher.Dispatch(os.Getenv("QUEUE_REPORT_BLACKLIST"), "blacklist.report", detailMessage)
 }

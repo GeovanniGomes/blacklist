@@ -6,8 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRoutes(r *gin.Engine) {
-	container_injection := depedence_injector.NewContainer()
-	blackllitHandler := http.NewBlackListHanhler(r, container_injection)
+func SetupRoutes(r *gin.Engine, container depedence_injector.ContainerInjection) {
+	blackllitHandler := http.NewBlackListHanhler(r, container)
 	blackllitHandler.BlacklistRoutes()
 }

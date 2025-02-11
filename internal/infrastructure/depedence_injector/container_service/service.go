@@ -1,4 +1,4 @@
-package depedence_injector
+package container_service
 
 import (
 	usecaseBlacklistContract "github.com/GeovanniGomes/blacklist/internal/application/contracts/usecase/blacklist"
@@ -8,7 +8,7 @@ import (
 	"go.uber.org/dig"
 )
 
-func RegistreBlackList(c *dig.Container){
+func RegistreBlackList(c *dig.Container) {
 	c.Provide(func(
 		usecaseCreateBlacklist usecaseBlacklistContract.IAddBlacklist,
 		usecaseCheckBlacklist usecaseBlacklistContract.ICheckBlacklist,

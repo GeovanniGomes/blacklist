@@ -1,4 +1,4 @@
-package depedence_injector
+package container_producers
 
 import (
 	"github.com/GeovanniGomes/blacklist/internal/infrastructure/queue"
@@ -6,7 +6,8 @@ import (
 	"go.uber.org/dig"
 )
 
-func RegisterDispatcher(c *dig.Container) {
+func RegisterPProducers(c *dig.Container) {
+
 	c.Provide(func(dispatcher *queue.Dispatcher) *producer.BlacklistProducer {
 		return producer.NewBlacklistProducer(dispatcher)
 	})

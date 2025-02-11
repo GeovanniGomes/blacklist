@@ -2,6 +2,7 @@ package http
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/GeovanniGomes/blacklist/internal/application/interfaces"
 	"github.com/GeovanniGomes/blacklist/internal/application/service"
@@ -14,8 +15,8 @@ type BlackListHanhler struct {
 	serviceBlacklist *service.BlacklistService
 }
 
-func NewBlackListHanhler(gin_engine *gin.Engine, container_injection *depedence_injector.ContainerInjection) *BlackListHanhler {
-	serviceBlacklist, err := container_injection.GetBlacklistService()
+func NewBlackListHanhler(gin_engine *gin.Engine, container depedence_injector.ContainerInjection) *BlackListHanhler {
+	serviceBlacklist, err := container.GetBlacklistService()
 	if err != nil {
 		panic(err)
 	}
@@ -28,6 +29,7 @@ func (h *BlackListHanhler) BlacklistRoutes() {
 		blacklistGroup.POST("/", h.addToBlacklist)
 		blacklistGroup.GET("/check", h.checkBlacklist)
 		blacklistGroup.DELETE("/remove", h.removeBlacklist)
+		blacklistGroup.POST("/report", h.generateReportBlacklist)
 	}
 }
 
@@ -71,4 +73,21 @@ func (h *BlackListHanhler) removeBlacklist(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusNoContent, gin.H{"message": ""})
+}
+
+func (h *BlackListHanhler) generateReportBlacklist(c *gin.Context) {
+	var entry interfaces.BlacklistInputReport
+	if err := c.ShouldBindJSON(&entry); err != nil {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
+		return
+	}
+	startDate := entry.StartDate.ToTime()
+	endDate := entry.EndDate.ToTime()
+
+	startDate = time.Date(startDate.Year(), startDate.Month(), startDate.Day(), 0, 0, 0, 0, startDate.Location())
+	endDate = time.Date(endDate.Year(), endDate.Month(), endDate.Day(), 23, 59, 59, 0, startDate.Location())
+
+	h.serviceBlacklist.SendGenerateReport(startDate, endDate)
+
+	c.JSON(http.StatusAccepted, gin.H{"message": ""})
 }

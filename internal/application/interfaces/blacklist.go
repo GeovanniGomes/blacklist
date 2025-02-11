@@ -1,14 +1,12 @@
 package interfaces
 
-import "time"
-
 type BlacklistInput struct {
-	EventId        string     `json:"event_id" binding:"required"`
-	Reason         string     `json:"reason" binding:"required"`
-	Document       string     `json:"document" binding:"required"`
-	Scope          string     `json:"scope" binding:"required"`
-	UserIdentifier int        `json:"user_identifier" binding:"required"`
-	BlockedUntil   *time.Time `json:"blocled_until"`
+	EventId        string          `json:"event_id" binding:"required"`
+	Reason         string          `json:"reason" binding:"required"`
+	Document       string          `json:"document" binding:"required"`
+	Scope          string          `json:"scope" binding:"required"`
+	UserIdentifier int             `json:"user_identifier" binding:"required"`
+	BlockedUntil   *CustomDateTime `json:"blocked_until"`
 }
 
 type BlacklistOutputCheck struct {
@@ -23,4 +21,9 @@ type BlacklistInputCheck struct {
 type BlacklistInputRemove struct {
 	UserIdentifier int    `json:"user_identifier" binding:"required"`
 	EventId        string `json:"event_id" binding:"required"`
+}
+
+type BlacklistInputReport struct {
+	StartDate CustomDate `json:"start_date" binding:"required"`
+	EndDate   CustomDate `json:"end_date" binding:"required"`
 }
