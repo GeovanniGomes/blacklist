@@ -43,7 +43,20 @@ services:
       - rabbitmq_data:/var/lib/rabbitmq
     networks:
       - app_network
-  
+  minio:
+    container_name: minio_container
+    restart: always
+    image: minio/minio
+    env_file:
+      - ./.env
+    volumes:
+      - data_lake:/data
+    ports:
+      - 9000:9000
+    networks:
+        - app_network
+    command: server --console-address ":9001" /data
+
   app:
     build:
       context: .
@@ -67,6 +80,8 @@ volumes:
   postgres_data:
     driver: local
   rabbitmq_data:
+    driver: local
+  data_lake:
     driver: local
 
 networks:

@@ -6,7 +6,7 @@ import (
 	"go.uber.org/dig"
 )
 
-func RegisterPProducers(c *dig.Container) {
+func RegisterProducers(c *dig.Container) {
 
 	c.Provide(func(dispatcher *queue.Dispatcher) *producer.BlacklistProducer {
 		return producer.NewBlacklistProducer(dispatcher)

@@ -13,7 +13,12 @@ func RegisterConsumers(c *dig.Container) {
 		return consumer.NewBlacklistConsumer(handler)
 	})
 
-	c.Provide(func(handler contracts.IQueue, repositotyBlacklist repositoty.IBlackListRepository) *consumer.BlacklistReportConsumer {
-		return consumer.NewBlacklistReportConsumer(handler, repositotyBlacklist)
+	c.Provide(func(
+		handler contracts.IQueue,
+		clientUpload contracts.IFileSystem,
+		repositotyBlacklist repositoty.IBlackListRepository,
+
+	) *consumer.BlacklistReportConsumer {
+		return consumer.NewBlacklistReportConsumer(handler, repositotyBlacklist, clientUpload)
 	})
 }

@@ -1,4 +1,4 @@
-package container_database
+package container_storage
 
 import (
 	"os"
@@ -25,8 +25,14 @@ func RegisterDatabase(c *dig.Container) {
 
 		instance, err := repository.NewRedisService(addr, password, db)
 		if err != nil {
+			
 			panic(err)
 		}
+		return instance
+	})
+
+	c.Provide(func() contracts.IFileSystem {
+		instance := repository.NewMinIO()
 		return instance
 	})
 }

@@ -1,11 +1,10 @@
 package consumer
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"log"
-	"os"
-	"path/filepath"
 	"time"
 
 	repositoty "github.com/GeovanniGomes/blacklist/internal/application/contracts/repository"
@@ -14,19 +13,27 @@ import (
 )
 
 type BlacklistReportConsumer struct {
-	queue                contracts.IQueue
-	blacklist_repository repositoty.IBlackListRepository
+	queue               contracts.IQueue
+	blacklistRepository repositoty.IBlackListRepository
+	clientUpload        contracts.IFileSystem
 }
 
-func NewBlacklistReportConsumer(queue contracts.IQueue, blacklist_repository repositoty.IBlackListRepository) *BlacklistReportConsumer {
-	return &BlacklistReportConsumer{queue: queue, blacklist_repository: blacklist_repository}
+func NewBlacklistReportConsumer(
+	queue contracts.IQueue,
+	blacklistRepository repositoty.IBlackListRepository,
+	clientUpload contracts.IFileSystem,
+
+) *BlacklistReportConsumer {
+	return &BlacklistReportConsumer{
+		queue:               queue,
+		clientUpload:        clientUpload,
+		blacklistRepository: blacklistRepository,
+	}
 }
 
 func (c *BlacklistReportConsumer) HandleMessage() func([]byte) error {
 	return func(message []byte) error {
 		log.Printf("Process message blacklist: %s", message)
-		cwd, _ := os.Getwd()
-		outputDir := filepath.Join(cwd, "..", "internal", "output")
 		currentDate := time.Now()
 		year, month, day := currentDate.Date()
 		dateGenetarion := fmt.Sprintf("%v_%v_%v_%v", year, month, day, currentDate.Second())
@@ -52,7 +59,7 @@ func (c *BlacklistReportConsumer) HandleMessage() func([]byte) error {
 			return err
 		}
 
-		blacklistToReports, err := c.blacklist_repository.FetchBlacklistEntries(startDate, endDate)
+		blacklistToReports, err := c.blacklistRepository.FetchBlacklistEntries(startDate, endDate)
 
 		if len(blacklistToReports) == 0 {
 			log.Print("Empty list to generate report")
@@ -88,12 +95,14 @@ func (c *BlacklistReportConsumer) HandleMessage() func([]byte) error {
 
 		f.SetActiveSheet(index)
 
-		fileName := fmt.Sprintf("%v/%v.xlsx", outputDir, dateGenetarion)
-		if err := f.SaveAs(fileName); err != nil {
-			log.Printf("Erro save file : %v", err)
+		var buf bytes.Buffer
+		if err := f.Write(&buf); err != nil {
+			log.Printf("Erro ao escrever o arquivo no buffer: %v", err)
+			return err
 		}
 
-		fmt.Printf("File Excel: %v.xlsx", dateGenetarion)
+		fileName := fmt.Sprintf("%v.xlsx", dateGenetarion)
+		c.clientUpload.Upload("file-blacklist", fileName, buf)
 		return nil
 	}
 }

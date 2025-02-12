@@ -18,29 +18,18 @@ Blacklist system to manage who can and cannot buy tickets at specific events or 
 - API para interação com o sistema
 - Integração com banco de dados
 
-## Instalação
-1. Clone o repositório:
+## Installation
+1. Clone reposiitory:
    ```sh
-   git clone https://github.com/seu-usuario/blacklist.git
+   git clone https://github.com/GeovanniGomes/blacklist.git
    cd blacklist
    ```
 
-2. Crie um ambiente virtual e instale as dependências:
+2. Rum appllication:
    ```sh
-   python -m venv venv
-   source venv/bin/activate  # No Windows use: venv\Scripts\activate
-   pip install -r requirements.txt
+   docker-compose 
    ```
 
-3. Configure as variáveis de ambiente:
-   ```sh
-   export DATABASE_URL="sqlite:///blacklist.db"  # Altere conforme o banco utilizado
-   ```
-
-4. Execute a aplicação:
-   ```sh
-   python main.py
-   ```
 
 ## Uso
 - Para adicionar um item à blacklist via API:
