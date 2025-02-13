@@ -6,9 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func StartHTTP(container depedence_injector.ContainerInjection) {
-	gin.SetMode(gin.ReleaseMode)
-	r := gin.Default()
+func StartHTTP(r *gin.Engine, container depedence_injector.ContainerInjection) {
+	//ßgin.SetMode(gin.ReleaseMode)
 	routes.SetupRoutes(r, container)
-	r.Run(":8000")
 }
