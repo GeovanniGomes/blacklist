@@ -23,12 +23,12 @@ func (black_list_repository *BlackListRepositoryMemory) FetchBlacklistEntries(st
 	return newCollection, nil
 }
 
-func (black_list_repository *BlackListRepositoryMemory) Add(blacklist *entity.BlackList) error {
+func (black_list_repository *BlackListRepositoryMemory) AddBlacklist(blacklist *entity.BlackList) error {
 	black_list_repository.collection_blacklist = append(black_list_repository.collection_blacklist, *blacklist)
 	return nil
 }
 
-func (black_list_repository *BlackListRepositoryMemory) Check(userIndentifier int, evendId *string) (*entity.BlackList, error) {
+func (black_list_repository *BlackListRepositoryMemory) CheckBlacklist(userIndentifier int, evendId *string) (*entity.BlackList, error) {
 	for _, blacklist := range black_list_repository.collection_blacklist {
 		if blacklist.GetUserIdentifier() == userIndentifier && blacklist.GetEventId() == evendId {
 			return &blacklist, nil
@@ -37,7 +37,7 @@ func (black_list_repository *BlackListRepositoryMemory) Check(userIndentifier in
 	return &entity.BlackList{}, nil
 }
 
-func (black_list_repository *BlackListRepositoryMemory) Remove(userIndentifier int, eventId string) error {
+func (black_list_repository *BlackListRepositoryMemory) RemoveBlacklist(userIndentifier int, eventId string) error {
 	var newCollection = []entity.BlackList{}
 	for _, blacklist := range black_list_repository.collection_blacklist {
 		if !(blacklist.GetUserIdentifier() == userIndentifier && blacklist.GetEventId() == &eventId) {

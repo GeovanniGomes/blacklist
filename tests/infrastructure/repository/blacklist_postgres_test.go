@@ -23,7 +23,7 @@ func TestSaveBlackList(t *testing.T) {
 
 	err = prepareBlacklist.IsValid()
 	require.Nil(t, err)
-	repositoryBlacklist.Add(prepareBlacklist)
+	repositoryBlacklist.AddBlacklist(prepareBlacklist)
 
 	rows, err := interface_database.SelectQuery("SELECT reason FROM blacklist WHERE id = $1", prepareBlacklist.GetId())
 	require.Nil(t, err)
@@ -54,7 +54,7 @@ func TestSaveBlackListWithFetch(t *testing.T) {
 
 	err = prepareBlacklist.IsValid()
 	require.Nil(t, err)
-	err = repositoryBlacklist.Add(prepareBlacklist)
+	err = repositoryBlacklist.AddBlacklist(prepareBlacklist)
 
 	require.Nil(t, err)
 
@@ -76,8 +76,8 @@ func TestCheckBlackList(t *testing.T) {
 
 	err = prepareBlacklist.IsValid()
 	require.Nil(t, err)
-	repositoryBlacklist.Add(prepareBlacklist)
-	blacklist, err := repositoryBlacklist.Check(prepareBlacklist.GetUserIdentifier(), prepareBlacklist.GetEventId())
+	repositoryBlacklist.AddBlacklist(prepareBlacklist)
+	blacklist, err := repositoryBlacklist.CheckBlacklist(prepareBlacklist.GetUserIdentifier(), prepareBlacklist.GetEventId())
 
 	require.Nil(t, err)
 	require.Equal(t, blacklist.GetReason(), "Fradude identificada")
@@ -94,11 +94,11 @@ func TestRemoveBlackList(t *testing.T) {
 	require.Nil(t, err)
 	err = prepareBlacklist.IsValid()
 	require.Nil(t, err)
-	repositoryBlacklist.Add(prepareBlacklist)
+	repositoryBlacklist.AddBlacklist(prepareBlacklist)
 
-	err = repositoryBlacklist.Remove(prepareBlacklist.GetUserIdentifier(), *prepareBlacklist.GetEventId())
+	err = repositoryBlacklist.RemoveBlacklist(prepareBlacklist.GetUserIdentifier(), *prepareBlacklist.GetEventId())
 	require.Nil(t, err)
-	blacklist, err := repositoryBlacklist.Check(prepareBlacklist.GetUserIdentifier(), prepareBlacklist.GetEventId())
+	blacklist, err := repositoryBlacklist.CheckBlacklist(prepareBlacklist.GetUserIdentifier(), prepareBlacklist.GetEventId())
 
 	require.Nil(t, err)
 	require.Equal(t, blacklist.GetReason(), "")

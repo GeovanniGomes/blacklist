@@ -18,7 +18,7 @@ func NewCheckBlacklist(
 }
 
 func (c *UsecaseCheckBlacklist) Execute(userIdentifier int, eventId *string) (string, error) {
-	blaclistEntity, err := c.blacklist_repository.Check(userIdentifier, eventId)
+	blaclistEntity, err := c.blacklist_repository.CheckBlacklist(userIdentifier, eventId)
 
 	if err != nil {
 

@@ -14,7 +14,7 @@ func TestRemoveBlacklist(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockCheckBlacklist := check_mock.NewMockIBlackListRepository(ctrl)
-	mockCheckBlacklist.EXPECT().Remove(gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
+	mockCheckBlacklist.EXPECT().RemoveBlacklist(gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
 
 	usecase := new_black_list_usecase.NewRemoveBlacklist(mockCheckBlacklist)
 	err := usecase.Execute(10, "event_id")

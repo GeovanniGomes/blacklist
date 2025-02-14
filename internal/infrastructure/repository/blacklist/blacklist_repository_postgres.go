@@ -64,7 +64,7 @@ func NewBlackListRepositoryPostgres(persistence contracts.IDatabaseRelational) *
 	return &BlackListRepositoryPostgres{persistence: persistence}
 }
 
-func (b *BlackListRepositoryPostgres) Add(blacklist *entity.BlackList) error {
+func (b *BlackListRepositoryPostgres) AddBlacklist(blacklist *entity.BlackList) error {
 	b.mutex.Lock()
 	defer b.mutex.Unlock()
 	err := b.persistence.InsertData(
@@ -89,7 +89,7 @@ func (b *BlackListRepositoryPostgres) Add(blacklist *entity.BlackList) error {
 	return nil
 }
 
-func (b *BlackListRepositoryPostgres) Check(userIdentifier int, eventId *string) (*entity.BlackList, error) {
+func (b *BlackListRepositoryPostgres) CheckBlacklist(userIdentifier int, eventId *string) (*entity.BlackList, error) {
 	factory := entity.FactoryEntity{}
 	b.mutex.Lock()
 	defer b.mutex.Unlock()
@@ -144,7 +144,7 @@ func (b *BlackListRepositoryPostgres) Check(userIdentifier int, eventId *string)
 	return &blacklists[0], nil
 }
 
-func (b *BlackListRepositoryPostgres) Remove(userIdentifier int, eventId string) error {
+func (b *BlackListRepositoryPostgres) RemoveBlacklist(userIdentifier int, eventId string) error {
 	b.mutex.Lock()
 	defer b.mutex.Unlock()
 

@@ -16,5 +16,5 @@ func NewRemoveBlacklist(blacklist_repository repository.IBlackListRepository) *R
 }
 
 func (usecase *RemoveBlackListUseCase) Execute(userIdentifier int, eventId string) error {
-	return usecase.blacklist_repository.Remove(userIdentifier, eventId)
+	return usecase.blacklist_repository.RemoveBlacklist(userIdentifier, eventId)
 }

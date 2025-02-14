@@ -17,7 +17,7 @@ func TestBlackList_AddUserBlackList(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockCheckBlacklist := add_mock.NewMockIBlackListRepository(ctrl)
-	mockCheckBlacklist.EXPECT().Add(gomock.Any()).Return(nil).AnyTimes()
+	mockCheckBlacklist.EXPECT().AddBlacklist(gomock.Any()).Return(nil).AnyTimes()
 
 	usecase := new_black_list_usecase.NewAddBlacklist(mockCheckBlacklist)
 	eventId := "1222"

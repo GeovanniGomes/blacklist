@@ -10,7 +10,7 @@ CREATE SCHEMA IF NOT EXISTS public;
 -- Criar tabela exemplo dentro do banco blacklist
 CREATE TABLE IF NOT EXISTS public.blacklist(
     id TEXT PRIMARY KEY,
-    event_id TEXT NOT NULL,
+    event_id TEXT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     reason TEXT NOT NULL,
     document TEXT NOT NULL,

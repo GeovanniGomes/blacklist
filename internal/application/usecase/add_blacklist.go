@@ -38,15 +38,13 @@ func (c *UsecaseAddBlacklist) Execute(userIdentifier int, eventId *string, reaso
 		log.Printf("error factory entity blacklist %v", err)
 		return &blacklistEmpty, errors.New("unable to add blacklist")
 	}
-	
-	err = blacklist.IsValid()
-	
-	if err != nil {
+	if err = blacklist.IsValid(); err != nil {
 		return &blacklistEmpty, err
 	}
-	err = c.blacklist_repository.Add(blacklist)
-	if err != nil {
+	
+	if err = c.blacklist_repository.AddBlacklist(blacklist); err != nil {
 		return &blacklistEmpty, err
 	}
+
 	return blacklist, nil
 }
