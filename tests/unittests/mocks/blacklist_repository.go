@@ -50,18 +50,18 @@ func (mr *MockIBlackListRepositoryMockRecorder) Add(blacklist interface{}) *gomo
 }
 
 // Check mocks base method.
-func (m *MockIBlackListRepository) Check(userIndentifier int, evendId string) (string, error) {
+func (m *MockIBlackListRepository) Check(userIndentifier int, eventId *string) (*entity.BlackList, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Check", userIndentifier, evendId)
-	ret0, _ := ret[0].(string)
+	ret := m.ctrl.Call(m, "Check", userIndentifier, eventId)
+	ret0, _ := ret[0].(*entity.BlackList)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Check indicates an expected call of Check.
-func (mr *MockIBlackListRepositoryMockRecorder) Check(userIndentifier, evendId interface{}) *gomock.Call {
+func (mr *MockIBlackListRepositoryMockRecorder) Check(userIndentifier, eventId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Check", reflect.TypeOf((*MockIBlackListRepository)(nil).Check), userIndentifier, evendId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Check", reflect.TypeOf((*MockIBlackListRepository)(nil).Check), userIndentifier, eventId)
 }
 
 // FetchBlacklistEntries mocks base method.

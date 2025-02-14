@@ -46,7 +46,7 @@ func (s *BlacklistService) AddBlacklist(requestInput interfaces.BlacklistInput) 
 	blockedUntil = nil
 	result, err := s.CheckBlacklist(interfaces.BlacklistInputCheck{
 		UserIdentifier: requestInput.UserIdentifier,
-		EventId:        requestInput.EventId,
+		EventId:        *requestInput.EventId,
 	})
 	if err != nil {
 		return err
@@ -65,7 +65,6 @@ func (s *BlacklistService) AddBlacklist(requestInput interfaces.BlacklistInput) 
 		requestInput.EventId,
 		requestInput.Reason,
 		requestInput.Document,
-		requestInput.Scope,
 		blockedUntil,
 	)
 	if err != nil {
@@ -79,11 +78,11 @@ func (s *BlacklistService) AddBlacklist(requestInput interfaces.BlacklistInput) 
 		"reason":        blacklistEntitty.GetReason(),
 		"is_blocked":    true,
 	}
-	err = s.register_audit.LogAction(blacklistEntitty.GetUserIdentifier(), blacklistEntitty.GetEventId(), contracts.ADD_BLACKLIST, logDetails)
+	err = s.register_audit.LogAction(blacklistEntitty.GetUserIdentifier(), *blacklistEntitty.GetEventId(), contracts.ADD_BLACKLIST, logDetails)
 	if err != nil {
 		log.Println(err.Error())
 	}
-	key_cache := s.generate_key_cache(blacklistEntitty.GetUserIdentifier(), blacklistEntitty.GetEventId())
+	key_cache := s.generate_key_cache(blacklistEntitty.GetUserIdentifier(), *blacklistEntitty.GetEventId())
 	err = s.persistence_cache.SetCache(ctx, key_cache, logDetails, nil)
 	log.Println(fmt.Printf("result action set cache %v", err))
 
@@ -101,6 +100,7 @@ func (s *BlacklistService) CheckBlacklist(requestInput interfaces.BlacklistInput
 	key_cache := s.generate_key_cache(userIdentifier, eventId)
 
 	detail_cache, _ := s.persistence_cache.GetCache(ctx, key_cache)
+	var IsBlocked = false
 
 	if detail_cache != nil {
 		reason, _ := detail_cache["reason"].(string)
@@ -120,17 +120,15 @@ func (s *BlacklistService) CheckBlacklist(requestInput interfaces.BlacklistInput
 		return interfaces.BlacklistOutputCheck{IsBlocked: is_blocked, Reason: reason}, nil
 	}
 
-	reason, err := s.usecaseCheckBlacklist.Execute(userIdentifier, eventId)
+	reason, err := s.usecaseCheckBlacklist.Execute(userIdentifier, &eventId)
 
 	if err != nil {
 		return interfaces.BlacklistOutputCheck{}, err
 	}
-	var isBlocked = false
-
-	if reason != "" {
-		isBlocked = true
+	if reason !=""{
+		IsBlocked = true
 	}
-	return interfaces.BlacklistOutputCheck{IsBlocked: isBlocked, Reason: reason}, nil
+	return interfaces.BlacklistOutputCheck{IsBlocked: IsBlocked, Reason: reason}, nil
 
 }
 

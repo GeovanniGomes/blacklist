@@ -7,5 +7,5 @@ import (
 )
 
 type IAddBlacklist interface {
-	Execute(userIndentifier int, evendId, reason, document, scope string, blockedUntil *time.Time) (*entity.BlackList, error)
+	Execute(userIndentifier int, evendId *string, reason, document string, blockedUntil *time.Time) (*entity.BlackList, error)
 }

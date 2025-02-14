@@ -41,7 +41,7 @@ func createTableBlacklist(db *sql.DB) {
 	createTableSQL := `
 	CREATE TABLE IF NOT EXISTS blacklist (
 		id TEXT PRIMARY KEY,
-		event_id TEXT NOT NULL,
+		event_id TEXT NULL,
 		created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 		reason TEXT NOT NULL,
 		document TEXT NOT NULL,

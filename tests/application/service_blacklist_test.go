@@ -53,9 +53,8 @@ func TestAddBlackListService(t *testing.T) {
 	blacklitervice, interface_database, _ := SetupRunTest(t)
 	eventId := uuid.NewV4().String()
 	requestInput := interfaces.BlacklistInput{
-		EventId:        eventId,
+		EventId:        &eventId,
 		UserIdentifier: 10,
-		Scope:          "global",
 		BlockedUntil:   nil,
 		Reason:         "Nao paga mensalidade",
 		Document:       "101101101101",
@@ -82,9 +81,8 @@ func TestCheckBlackListService(t *testing.T) {
 	eventId := uuid.NewV4().String()
 	userIdentifier := 10
 	requestInput := interfaces.BlacklistInput{
-		EventId:        eventId,
+		EventId:        &eventId,
 		UserIdentifier: userIdentifier,
-		Scope:          "global",
 		BlockedUntil:   nil,
 		Reason:         "Nao paga mensalidade",
 		Document:       "101101101101",
@@ -113,9 +111,8 @@ func TestRemokBlackListService(t *testing.T) {
 	eventId := uuid.NewV4().String()
 	userIdentifier := 10
 	requestInput := interfaces.BlacklistInput{
-		EventId:        eventId,
+		EventId:        &eventId,
 		UserIdentifier: userIdentifier,
-		Scope:          "global",
 		BlockedUntil:   nil,
 		Reason:         "Nao paga mensalidade",
 		Document:       "101101101101",

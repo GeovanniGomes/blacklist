@@ -17,7 +17,8 @@ func TestAddLogger(t *testing.T){
 	defer teardown()
 
 	repositoryBlacklist := audit.NewDBAuditLogger(interface_database)
-	prepareBlacklist, err := factory.FactoryNewBlacklist(uuid.NewV4().String(),"Fradude identificada","email@gmail.com",entity.GLOBAL, entity.PERMANENT,10,true,nil,nil,nil)
+	eventId :=uuid.NewV4().String()
+	prepareBlacklist, err := factory.FactoryNewBlacklist(&eventId,"Fradude identificada","email@gmail.com",entity.SPECIFIC, entity.PERMANENT,10,true,nil,nil,nil)
 
 	require.Nil(t,err)
 	err = prepareBlacklist.IsValid()

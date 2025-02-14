@@ -7,7 +7,7 @@ import (
 )
 
 type IBlackListRepository interface {
-	Check(userIndentifier int, evendId string) (string, error)
+	Check(userIndentifier int, eventId *string) (*entity.BlackList, error)
 	Add(blacklist *entity.BlackList) error
 	Remove(userIndentifier int, eventId string) error
 	FetchBlacklistEntries(startDate, endDate time.Time) ([]entity.BlackList, error)

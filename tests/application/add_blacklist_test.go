@@ -14,10 +14,10 @@ import (
 func TestAddBlackList(t *testing.T){
 	repositoryMemory := blacklist.BlackListRepositoryMemory{}
 	usecaseAddBacklist := usecase.NewAddBlacklist(&repositoryMemory)
-
-	blacklistEntity , err := usecaseAddBacklist.Execute(10,uuid.NewV4().String(),"Fraude detectada","10101010101",entity.GLOBAL, nil)
+	eventId:= uuid.NewV4().String()
+	blacklistEntity , err := usecaseAddBacklist.Execute(10,&eventId,"Fraude detectada","10101010101", nil)
 	require.Nil(t,err)
 	require.NotNil(t, blacklistEntity)
-	require.Equal(t, blacklistEntity.GetScope(), entity.GLOBAL)
+	require.Equal(t, blacklistEntity.GetScope(), entity.SPECIFIC)
 	require.Equal(t, blacklistEntity.GetBlockedType(), entity.PERMANENT)
 }

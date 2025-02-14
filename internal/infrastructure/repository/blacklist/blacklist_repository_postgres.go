@@ -33,7 +33,7 @@ func (b *BlackListRepositoryPostgres) FetchBlacklistEntries(startDate, endDate t
 	for rows.Next() {
 		var (
 			id             *string
-			eventId        string
+			eventId        *string
 			createdAt      time.Time
 			reason         string
 			document       string
@@ -89,27 +89,59 @@ func (b *BlackListRepositoryPostgres) Add(blacklist *entity.BlackList) error {
 	return nil
 }
 
-func (b *BlackListRepositoryPostgres) Check(userIdentifier int, evendId string) (string, error) {
+func (b *BlackListRepositoryPostgres) Check(userIdentifier int, eventId *string) (*entity.BlackList, error) {
+	factory := entity.FactoryEntity{}
 	b.mutex.Lock()
 	defer b.mutex.Unlock()
 
-	rows, err := b.persistence.SelectQuery("SELECT reason FROM blacklist WHERE user_identifier = $1 and event_id = $2 and is_active = $3", userIdentifier, evendId, true)
+	query := "SELECT *FROM blacklist WHERE user_identifier = $1 and is_active = $2"
+	args := []interface{}{userIdentifier, true}
+
+	if eventId != nil {
+		query += " and event_id = $3"
+		args = append(args, eventId)
+	}
+	query += " ORDER BY created_at DESC LIMIT 1"
+	rows, err := b.persistence.SelectQuery(query, args...)
 
 	if err != nil {
 		log.Fatalf("Error querying blacklist: %v", err)
-		return "", errors.New("unable to complete blacklist check")
+		return &entity.BlackList{}, errors.New("unable to complete blacklist check")
 	}
 	defer rows.Close()
-
-	var reason string
-	if rows.Next() {
-		if err := rows.Scan(&reason); err != nil {
-			return "", errors.New("unable to complete blacklist check")
+	var blacklists []entity.BlackList
+	for rows.Next() {
+		var (
+			id                 *string
+			scanEventId        *string
+			createdAt          time.Time
+			reason             string
+			document           string
+			scope              string
+			scanUserIdentifier int
+			blockedUntil       *time.Time
+			blockedType        string
+			isActive           bool
+		)
+		if err := rows.Scan(&id, &scanEventId, &createdAt, &reason, &document, &scope, &scanUserIdentifier, &blockedUntil, &blockedType, &isActive); err != nil {
+			return &entity.BlackList{}, fmt.Errorf("erro ao escanear linha: %v", err)
 		}
-		return reason, nil
-	}
-	return "", nil
 
+		blacklist, err := factory.FactoryNewBlacklist(eventId, reason, document, scope, blockedType, userIdentifier, isActive, blockedUntil, &createdAt, id)
+		
+		if err != nil {
+			return nil, fmt.Errorf("erro ao criar entidade BlackList: %v", err)
+		}
+		blacklists = append(blacklists, *blacklist)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("erro ao iterar sobre os resultados: %v", err)
+	}
+	if len(blacklists) == 0{
+		return &entity.BlackList{}, nil
+	}
+	return &blacklists[0], nil
 }
 
 func (b *BlackListRepositoryPostgres) Remove(userIdentifier int, eventId string) error {

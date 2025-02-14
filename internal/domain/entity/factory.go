@@ -9,7 +9,7 @@ import (
 
 type FactoryEntity struct{}
 
-func (f *FactoryEntity) FactoryNewBlacklist(eventId, reason, document, scope, blockedType string, userIdentifier int,isActive bool, blockedUntil, createdAt *time.Time, id *string)(*BlackList, error){
+func (f *FactoryEntity) FactoryNewBlacklist(eventId *string, reason, document, scope, blockedType string, userIdentifier int,isActive bool, blockedUntil, createdAt *time.Time, id *string)(*BlackList, error){
 	valueId, err := f.setId(id)
 	valueCreatedAt := f.setCreatedAt(createdAt)
 

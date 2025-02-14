@@ -18,7 +18,7 @@ const (
 
 type BlackList struct {
 	id             string
-	eventId        string
+	eventId        *string
 	createdAt      time.Time
 	reason         string
 	document       string
@@ -29,9 +29,9 @@ type BlackList struct {
 	isActive       bool
 }
 
-func NewBlackList(eventId, reason, document, scope, blockedType string, userIdentifier int, blockedUntil *time.Time,  createdAt time.Time, id string, isActive bool) *BlackList {
+func NewBlackList(eventId *string, reason, document, scope, blockedType string, userIdentifier int, blockedUntil *time.Time, createdAt time.Time, id string, isActive bool) *BlackList {
 	return &BlackList{
-		id:            id,
+		id:             id,
 		eventId:        eventId,
 		reason:         reason,
 		document:       document,
@@ -70,10 +70,18 @@ func (blackList *BlackList) IsValid() error {
 	if blackList.userIdentifier == 0 {
 		return errors.New("user identifier invalid")
 	}
-
-	_, err := uuid.FromString(blackList.eventId)
-	if err != nil {
-		return errors.New("event id is not a valid uuid")
+	if blackList.eventId != nil {
+		_, err := uuid.FromString(*blackList.eventId)
+		if err != nil {
+			return errors.New("event id is not a valid uuid")
+		}
+		if blackList.scope != SPECIFIC {
+			return errors.New("for this type of blacklist, its scope cannot be different from specific")
+		}
+	} else {
+		if blackList.scope != GLOBAL {
+			return errors.New("for this type of blacklist, its scope cannot be different from global")
+		}
 	}
 
 	return nil
@@ -89,7 +97,7 @@ func (blacklist *BlackList) ConverterBlockedUntilToString() string {
 func (blackList *BlackList) GetId() string {
 	return blackList.id
 }
-func (blackList *BlackList) GetEventId() string {
+func (blackList *BlackList) GetEventId() *string {
 	return blackList.eventId
 }
 
@@ -116,6 +124,6 @@ func (blackList *BlackList) GetBlockedType() string {
 func (blackList *BlackList) GetCreatedAt() time.Time {
 	return blackList.createdAt
 }
-func (blackList *BlackList) GetIsActive()bool {
+func (blackList *BlackList) GetIsActive() bool {
 	return blackList.isActive
 }

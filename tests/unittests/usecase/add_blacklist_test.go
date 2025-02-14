@@ -20,14 +20,21 @@ func TestBlackList_AddUserBlackList(t *testing.T) {
 	mockCheckBlacklist.EXPECT().Add(gomock.Any()).Return(nil).AnyTimes()
 
 	usecase := new_black_list_usecase.NewAddBlacklist(mockCheckBlacklist)
-	blocked, err := usecase.Execute(10, "1222", "fradue", "10101010112111", "global", nil)
+	eventId := "1222"
+	blocked, err := usecase.Execute(10, &eventId, "fradue", "10101010112111", nil)
 
 	require.NotNil(t, err)
 	require.NotNil(t, blocked)
 	require.Equal(t, "event id is not a valid uuid", err.Error())
-
-	blocked, err = usecase.Execute(10, uuid.NewV4().String(), "fradue", "10101010112111", "global", nil)
+	eventId =uuid.NewV4().String()
+	blocked, err = usecase.Execute(10, &eventId, "fradue", "10101010112111", nil)
 
 	require.Nil(t, err)
 	require.Equal(t, entity.PERMANENT, blocked.GetBlockedType())
+	require.Equal(t, entity.SPECIFIC, blocked.GetScope())
+
+	blocked, err = usecase.Execute(10, nil, "fradue", "10101010112111", nil)
+	require.Nil(t, err)
+	require.Equal(t, entity.PERMANENT, blocked.GetBlockedType())
+	require.Equal(t, entity.GLOBAL, blocked.GetScope())
 }

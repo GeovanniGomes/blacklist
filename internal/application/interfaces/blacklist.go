@@ -1,10 +1,9 @@
 package interfaces
 
 type BlacklistInput struct {
-	EventId        string          `json:"event_id" binding:"required"`
+	EventId        *string          `json:"event_id" binding:"required"`
 	Reason         string          `json:"reason" binding:"required"`
 	Document       string          `json:"document" binding:"required"`
-	Scope          string          `json:"scope" binding:"required"`
 	UserIdentifier int             `json:"user_identifier" binding:"required"`
 	BlockedUntil   *CustomDateTime `json:"blocked_until"`
 }
