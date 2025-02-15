@@ -219,3 +219,16 @@ func (b *BlackListRepositoryPostgres) GetEvent(id string) (*entity.Event, error)
 
 	return nil, nil
 }
+
+func (b *BlackListRepositoryPostgres) RemoveEvent(id string) error {
+	b.mutex.Lock()
+	defer b.mutex.Unlock()
+
+	return b.persistence.UpdateData(
+		"events",
+		[]string{"is_active"},
+		[]interface{}{false},
+		"id = $2",
+		id,
+	)
+}

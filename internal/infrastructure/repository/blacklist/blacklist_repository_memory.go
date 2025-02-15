@@ -63,3 +63,15 @@ func (black_list_repository *BlackListRepositoryMemory) GetEvent(id string) (*en
 	}
 	return &entity.Event{}, nil
 }
+
+func (black_list_repository *BlackListRepositoryMemory) RemoveEvent(id string) error {
+	var newCollection = []entity.Event{}
+	for _, event := range black_list_repository.collectionEvents {
+		if !(event.GetId() == id) {
+			newCollection = append(newCollection, event)
+			continue
+		}
+	}
+	black_list_repository.collectionEvents = newCollection
+	return nil
+}

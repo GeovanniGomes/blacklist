@@ -13,5 +13,6 @@ type IBlackListRepository interface {
 	FetchBlacklistEntries(startDate, endDate time.Time) ([]entity.BlackList, error)
 
 	AddEvent(event entity.Event) error
-	GetEvent(id string) (*entity.Event,error)
+	GetEvent(id string) (*entity.Event, error)
+	RemoveEvent(id string) error
 }

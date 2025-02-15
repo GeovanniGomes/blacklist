@@ -121,3 +121,17 @@ func (mr *MockIBlackListRepositoryMockRecorder) RemoveBlacklist(userIndentifier,
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RemoveBlacklist", reflect.TypeOf((*MockIBlackListRepository)(nil).RemoveBlacklist), userIndentifier, eventId)
 }
+
+// RemoveEvent mocks base method.
+func (m *MockIBlackListRepository) RemoveEvent(id string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RemoveEvent", id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// RemoveEvent indicates an expected call of RemoveEvent.
+func (mr *MockIBlackListRepositoryMockRecorder) RemoveEvent(id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RemoveEvent", reflect.TypeOf((*MockIBlackListRepository)(nil).RemoveEvent), id)
+}
