@@ -128,7 +128,7 @@ func (b *BlackListRepositoryPostgres) CheckBlacklist(userIdentifier int, eventId
 		}
 
 		blacklist, err := factory.FactoryNewBlacklist(eventId, reason, document, scope, blockedType, userIdentifier, isActive, blockedUntil, &createdAt, id)
-		
+
 		if err != nil {
 			return nil, fmt.Errorf("erro ao criar entidade BlackList: %v", err)
 		}
@@ -138,7 +138,7 @@ func (b *BlackListRepositoryPostgres) CheckBlacklist(userIdentifier int, eventId
 	if err = rows.Err(); err != nil {
 		return nil, fmt.Errorf("erro ao iterar sobre os resultados: %v", err)
 	}
-	if len(blacklists) == 0{
+	if len(blacklists) == 0 {
 		return &entity.BlackList{}, nil
 	}
 	return &blacklists[0], nil
@@ -155,4 +155,69 @@ func (b *BlackListRepositoryPostgres) RemoveBlacklist(userIdentifier int, eventI
 		"user_identifier = $2 AND event_id = $3",
 		userIdentifier, eventId,
 	)
+}
+
+func (b *BlackListRepositoryPostgres) AddEvent(event entity.Event) error {
+	b.mutex.Lock()
+	defer b.mutex.Unlock()
+	err := b.persistence.InsertData(
+		"events",
+		[]string{"id", "title", "description", "date", "category", "is_active", "status", "created_at"},
+		[]interface{}{
+			event.GetId(),
+			event.GetTitle(),
+			event.GetDescription(),
+			event.GetDate(),
+			event.GetCategory().GetName(),
+			event.GetIsActive(),
+			event.GetStatus(),
+			event.GetCreatedAt(),
+		},
+	)
+	if err != nil {
+		log.Printf("Error peersiste data event: %v", err)
+		return err
+	}
+	return nil
+}
+
+func (b *BlackListRepositoryPostgres) GetEvent(id string) (*entity.Event, error) {
+	factory := entity.FactoryEntity{}
+	b.mutex.Lock()
+	defer b.mutex.Unlock()
+
+	query := "SELECT * FROM events WHERE id = $1 and status = $2"
+	args := []interface{}{id, entity.ENABLED}
+
+	rows, err := b.persistence.SelectQuery(query, args...)
+	if err != nil {
+		log.Printf("Error querying events: %v", err)
+		return nil, errors.New("unable to complete event get")
+	}
+	defer rows.Close()
+
+	var (
+		idEvent          string
+		title       string
+		description string
+		date        time.Time
+		category    string
+		status      string
+		isActive    bool
+		createdAt   time.Time
+	)
+
+	if rows.Next() {
+		if err := rows.Scan(&idEvent, &title, &description, &date, &category, &isActive, &status, &createdAt); err != nil {
+			return nil, fmt.Errorf("erro ao escanear linha: %v", err)
+		}
+
+		event, err := factory.FactoryNewEvent(&idEvent, title, description, date,&createdAt,category,isActive, status)
+		if err != nil {
+			return nil, fmt.Errorf("erro ao criar entidade BlackList: %v", err)
+		}
+		return event, nil
+	}
+
+	return nil, nil // Retorna nil se não encontrar um registro
 }

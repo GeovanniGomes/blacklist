@@ -1,31 +1,24 @@
 package entity_test
 
 import (
-	"github.com/GeovanniGomes/blacklist/internal/domain/entity"
-	"github.com/GeovanniGomes/blacklist/internal/domain/value_objects"
 	"testing"
 	"time"
+
+	"github.com/GeovanniGomes/blacklist/internal/domain/entity"
+	"github.com/GeovanniGomes/blacklist/internal/domain/value_objects"
+	"github.com/GeovanniGomes/blacklist/tests/fixtures"
 	"github.com/stretchr/testify/require"
 )
 
-// Helper function to create a new Category
-func createCategory(categoryName string) *value_objects.Category {
-	category := value_objects.Category{}
-	newCategory, _ := category.NewCategory(categoryName)
-	return newCategory
-}
-
-func createEvent(title, description string, date time.Time, category *value_objects.Category) *entity.Event {
-	return entity.NewEvent(title, description, date, *category)
-}
 
 func TestEvent_Enable(t *testing.T) {
 	// Setup test fixtures
-	category := createCategory(value_objects.SOCCER)
+	factoryEntity := entity.FactoryEntity{}
 	dateEvent := time.Now()
-	event := createEvent("Jogo do Flamengo", "Campeonato carioca", dateEvent, category)
-	// Act
-	err := event.Enable()
+	event, err := factoryEntity.FactoryNewEvent(nil, "Jogo do Flamengo", "Campeonato carioca", dateEvent, nil, value_objects.SOCCER, false, entity.ENABLED)
+	require.Nil(t, err)
+
+	err = event.Enable()
 
 	// Assertions
 	require.Nil(t, err)
@@ -48,13 +41,15 @@ func TestEvent_Enable(t *testing.T) {
 
 }
 
+
 func TestEvent_Disable(t *testing.T) {
 	// Setup test fixtures
-	category := createCategory(value_objects.SOCCER)
+	factoryEntity := entity.FactoryEntity{}
 	dateEvent := time.Now()
-	event := createEvent("Jogo do Flamengo", "Campeonato carioca", dateEvent, category)
-	// Act
-	err := event.Disable()
+	event, err := factoryEntity.FactoryNewEvent(nil, "Jogo do Flamengo", "Campeonato carioca", dateEvent, nil, value_objects.SOCCER, false, entity.ENABLED)
+	require.Nil(t, err)
+
+	err = event.Disable()
 
 	// Assertions
 	require.Nil(t, err)
@@ -75,24 +70,22 @@ func TestEvent_Disable(t *testing.T) {
 	require.Nil(t, error_disable)
 }
 func TestEvent_NewEvent_Date_Invalid(t *testing.T) {
-	category := createCategory(value_objects.CARNIVAL)
+	factoryEntity := entity.FactoryEntity{}
 	dateEvent := time.Now().AddDate(0, 0, -5)
 
-	event := createEvent("Jogo do Flamengo", "Campeonato carioca", dateEvent, category)
-	_, err := event.IsValid()
+	event, _ := factoryEntity.FactoryNewEvent(nil, "Jogo do Flamengo", "Campeonato carioca", dateEvent, nil, value_objects.CARNIVAL, false, entity.ENABLED)
+	err := event.IsValid()
 	require.NotNil(t, err)
 
 	require.Equal(t, "Event date cannot be less than the current date", err.Error())
 }
 
 func TestEvent_ChangeCategory(t *testing.T) {
-	// Setup test fixtures
-	category := createCategory(value_objects.SOCCER)
+	factoryEntity := entity.FactoryEntity{}
 	dateEvent := time.Now()
-	event := createEvent("Jogo do Flamengo", "Campeonato carioca", dateEvent, category)
-
-	// Act
-	newCategory := createCategory(value_objects.CARNIVAL)
+	event, err := factoryEntity.FactoryNewEvent(nil, "Jogo do Flamengo", "Campeonato carioca", dateEvent, nil, value_objects.SOCCER, false, entity.ENABLED)
+	require.Nil(t, err)
+	newCategory := fixtures.CreateCategory(value_objects.CARNIVAL)
 	event.ChangeCatrgory(*newCategory)
 
 	// Assertions

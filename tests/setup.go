@@ -19,6 +19,7 @@ func SetupPostgresContainer(t *testing.T) (contracts.IDatabaseRelational, func()
 	for i := 0; i <= 1; i++ {
 		createTableBlacklist(db)
 		createTableAudit(db)
+		createTableEvents(db)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -27,6 +28,7 @@ func SetupPostgresContainer(t *testing.T) (contracts.IDatabaseRelational, func()
 	teardown := func() {
 		db.Exec("DELETE from blacklist")
 		db.Exec("DELETE from auditlog")
+		db.Exec("DELETE from events")
 	}
 
 	// Conectando ao banco
@@ -66,6 +68,24 @@ func createTableAudit(db *sql.DB) {
 		user_identifier INT NOT NULL,
 		action TEXT NOT NULL,
 		details TEXT NOT NULL
+	);`
+	_, err := db.Exec(createTableSQL)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func createTableEvents(db *sql.DB) {
+	createTableSQL := `
+	CREATE TABLE IF NOT EXISTS events (
+		id TEXT PRIMARY KEY,
+		title TEXT NOT NULL,
+		description TEXT NOT NULL,
+		date TIMESTAMP NOT NULL,
+		category TEXT NOT NULL,
+		is_active BOOLEAN NOT NULL DEFAULT FALSE,
+		status TEXT NOT NULL,
+		created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 	);`
 	_, err := db.Exec(createTableSQL)
 	if err != nil {

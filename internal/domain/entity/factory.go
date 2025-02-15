@@ -1,17 +1,17 @@
 package entity
 
 import (
-	"errors"
 	"time"
 
-	uuid "github.com/satori/go.uuid"
+	"github.com/GeovanniGomes/blacklist/internal/domain/value_objects"
+	"github.com/GeovanniGomes/blacklist/internal/util"
 )
 
 type FactoryEntity struct{}
 
 func (f *FactoryEntity) FactoryNewBlacklist(eventId *string, reason, document, scope, blockedType string, userIdentifier int,isActive bool, blockedUntil, createdAt *time.Time, id *string)(*BlackList, error){
-	valueId, err := f.setId(id)
-	valueCreatedAt := f.setCreatedAt(createdAt)
+	valueId, err := util.ValidateOrGenerateID(id)
+	valueCreatedAt := util.DefaultOrProvidedTime(createdAt)
 
 	if err != nil{
 		return  &BlackList{}, err
@@ -19,24 +19,18 @@ func (f *FactoryEntity) FactoryNewBlacklist(eventId *string, reason, document, s
 	return NewBlackList(eventId,reason,document,scope,blockedType,userIdentifier,blockedUntil,valueCreatedAt, *valueId,isActive), nil
 
 }
+func (f *FactoryEntity) FactoryNewEvent(id *string,title, description string, date time.Time, createdAt *time.Time, category string, isActive bool, status string)(*Event, error){
+	valueId, err :=  util.ValidateOrGenerateID(id)
+	valueCreatedAt :=util.DefaultOrProvidedTime(createdAt)
 
-func (f *FactoryEntity) setId(id *string) (*string, error){
-	newValue := uuid.NewV4().String()
-	if id !=nil {
-		value, err:= uuid.FromString(*id)
-		if err !=nil{
-			return nil, errors.New("value id invalid")
-		}
-		strValue := value.String()
-		return &strValue, nil
+	if err != nil{
+		return  &Event{}, err
 	}
-	return &newValue, nil
-}
+	categoryValueObject := value_objects.Category{}
+	categoryEntity, err := categoryValueObject.NewCategory(category)
+	if err != nil{
+		return &Event{},err
+	}
+	return NewEvent(*valueId,title,description,date,valueCreatedAt,*categoryEntity,isActive, status), nil
 
-func (f *FactoryEntity) setCreatedAt(createdAt *time.Time) time.Time {
-	newCreatedAt := time.Now()
-	if createdAt !=nil {
-		return *createdAt
-	}
-	return newCreatedAt
 }

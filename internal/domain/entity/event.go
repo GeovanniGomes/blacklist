@@ -1,12 +1,11 @@
 package entity
 
 import (
-	"github.com/GeovanniGomes/blacklist/internal/domain/value_objects"
-	"github.com/GeovanniGomes/blacklist/internal/util"
 	"errors"
 	"time"
 
-	uuid "github.com/satori/go.uuid"
+	"github.com/GeovanniGomes/blacklist/internal/domain/value_objects"
+	"github.com/GeovanniGomes/blacklist/internal/util"
 )
 
 const (
@@ -22,16 +21,19 @@ type Event struct {
 	category    value_objects.Category
 	isActive    bool
 	status      string
+	createdAt   time.Time
 }
 
-func NewEvent(title, description string, date time.Time, category value_objects.Category) *Event {
+func NewEvent(id, title, description string, date, createdAt time.Time, category value_objects.Category, isActive bool, status string) *Event {
 	new_event := Event{
-		id:          uuid.NewV4().String(),
+		id:          id,
 		title:       title,
 		description: description,
 		date:        date,
 		category:    category,
-		isActive:    false,
+		isActive:    isActive,
+		createdAt:   createdAt,
+		status:      status,
 	}
 
 	return &new_event
@@ -40,7 +42,7 @@ func NewEvent(title, description string, date time.Time, category value_objects.
 func (event *Event) Enable() error {
 	now := util.TruncateDate(time.Now())
 
-	if now.After(util.TruncateDate(event.date)){
+	if now.After(util.TruncateDate(event.date)) {
 		return errors.New("it is not possible to enable an event with a past date")
 	}
 	event.status = ENABLED
@@ -60,26 +62,25 @@ func (event *Event) ChangeCatrgory(category value_objects.Category) {
 }
 func (event *Event) ChangeDateEvent(dateEvent time.Time) error {
 	event.date = dateEvent
-	valid, error := event.IsValid()
-
-	if !valid {
-		return errors.New(error.Error())
+	if err := event.IsValid(); err != nil {
+		return err
 	}
+
 	return nil
 }
 
-func (event *Event) IsValid() (bool, error) {
+func (event *Event) IsValid() error {
 	if util.GetSizeString(event.title) == 0 {
-		return false, errors.New("the title is required")
+		return errors.New("the title is required")
 	}
 	if util.GetSizeString(event.description) == 0 {
-		return false, errors.New("the description is required")
+		return errors.New("the description is required")
 	}
 	now := util.TruncateDate(time.Now())
 	if event.date.Before(now) {
-		return false, errors.New("Event date cannot be less than the current date")
+		return errors.New("Event date cannot be less than the current date")
 	}
-	return true, nil
+	return nil
 }
 func (event *Event) GetId() string {
 	return event.id
@@ -101,4 +102,7 @@ func (event *Event) GetIsActive() bool {
 }
 func (event *Event) GetStatus() string {
 	return event.status
+}
+func (event *Event) GetCreatedAt() time.Time {
+	return event.createdAt
 }
