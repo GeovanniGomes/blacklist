@@ -84,7 +84,6 @@ func createTableEvents(db *sql.DB) {
 		date TIMESTAMP NOT NULL,
 		category TEXT NOT NULL,
 		is_active BOOLEAN NOT NULL DEFAULT FALSE,
-		status TEXT NOT NULL,
 		created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 	);`
 	_, err := db.Exec(createTableSQL)

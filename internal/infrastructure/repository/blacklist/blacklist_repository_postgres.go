@@ -162,7 +162,7 @@ func (b *BlackListRepositoryPostgres) AddEvent(event entity.Event) error {
 	defer b.mutex.Unlock()
 	err := b.persistence.InsertData(
 		"events",
-		[]string{"id", "title", "description", "date", "category", "is_active", "status", "created_at"},
+		[]string{"id", "title", "description", "date", "category", "is_active", "created_at"},
 		[]interface{}{
 			event.GetId(),
 			event.GetTitle(),
@@ -170,7 +170,6 @@ func (b *BlackListRepositoryPostgres) AddEvent(event entity.Event) error {
 			event.GetDate(),
 			event.GetCategory().GetName(),
 			event.GetIsActive(),
-			event.GetStatus(),
 			event.GetCreatedAt(),
 		},
 	)
@@ -186,8 +185,8 @@ func (b *BlackListRepositoryPostgres) GetEvent(id string) (*entity.Event, error)
 	b.mutex.Lock()
 	defer b.mutex.Unlock()
 
-	query := "SELECT * FROM events WHERE id = $1 and status = $2"
-	args := []interface{}{id, entity.ENABLED}
+	query := "SELECT * FROM events WHERE id = $1 and is_active = $2"
+	args := []interface{}{id, true}
 
 	rows, err := b.persistence.SelectQuery(query, args...)
 	if err != nil {
@@ -197,27 +196,26 @@ func (b *BlackListRepositoryPostgres) GetEvent(id string) (*entity.Event, error)
 	defer rows.Close()
 
 	var (
-		idEvent          string
+		idEvent     string
 		title       string
 		description string
 		date        time.Time
 		category    string
-		status      string
 		isActive    bool
 		createdAt   time.Time
 	)
 
 	if rows.Next() {
-		if err := rows.Scan(&idEvent, &title, &description, &date, &category, &isActive, &status, &createdAt); err != nil {
+		if err := rows.Scan(&idEvent, &title, &description, &date, &category, &isActive, &createdAt); err != nil {
 			return nil, fmt.Errorf("erro ao escanear linha: %v", err)
 		}
 
-		event, err := factory.FactoryNewEvent(&idEvent, title, description, date,&createdAt,category,isActive, status)
+		event, err := factory.FactoryNewEvent(&idEvent, title, description, date, &createdAt, category, isActive)
 		if err != nil {
 			return nil, fmt.Errorf("erro ao criar entidade BlackList: %v", err)
 		}
 		return event, nil
 	}
 
-	return nil, nil // Retorna nil se não encontrar um registro
+	return nil, nil
 }

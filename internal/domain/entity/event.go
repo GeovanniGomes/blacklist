@@ -8,10 +8,6 @@ import (
 	"github.com/GeovanniGomes/blacklist/internal/util"
 )
 
-const (
-	DISABLED = "disabled"
-	ENABLED  = "enabled"
-)
 
 type Event struct {
 	id          string
@@ -20,11 +16,10 @@ type Event struct {
 	date        time.Time
 	category    value_objects.Category
 	isActive    bool
-	status      string
 	createdAt   time.Time
 }
 
-func NewEvent(id, title, description string, date, createdAt time.Time, category value_objects.Category, isActive bool, status string) *Event {
+func NewEvent(id, title, description string, date, createdAt time.Time, category value_objects.Category, isActive bool) *Event {
 	new_event := Event{
 		id:          id,
 		title:       title,
@@ -33,29 +28,11 @@ func NewEvent(id, title, description string, date, createdAt time.Time, category
 		category:    category,
 		isActive:    isActive,
 		createdAt:   createdAt,
-		status:      status,
 	}
 
 	return &new_event
 }
 
-func (event *Event) Enable() error {
-	now := util.TruncateDate(time.Now())
-
-	if now.After(util.TruncateDate(event.date)) {
-		return errors.New("it is not possible to enable an event with a past date")
-	}
-	event.status = ENABLED
-	return nil
-}
-
-func (event *Event) Disable() error {
-	if time.Now().Before(event.date) {
-		return errors.New("it is not possible to disable an event with a past date")
-	}
-	event.status = DISABLED
-	return nil
-}
 
 func (event *Event) ChangeCatrgory(category value_objects.Category) {
 	event.category = category
@@ -100,9 +77,7 @@ func (event *Event) GetCategory() *value_objects.Category {
 func (event *Event) GetIsActive() bool {
 	return event.isActive
 }
-func (event *Event) GetStatus() string {
-	return event.status
-}
+
 func (event *Event) GetCreatedAt() time.Time {
 	return event.createdAt
 }

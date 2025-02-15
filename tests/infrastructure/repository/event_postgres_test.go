@@ -18,7 +18,7 @@ func TestSaveEvent(t *testing.T) {
 
 	factory := entity.FactoryEntity{}
 	dateEvent := time.Now().Add(48)
-	prepareEvent, err := factory.FactoryNewEvent(nil, "Jogo do flamento", "Brasileirão", dateEvent, nil, value_objects.SOCCER, false, entity.ENABLED)
+	prepareEvent, err := factory.FactoryNewEvent(nil, "Jogo do flamento", "Brasileirão", dateEvent, nil, value_objects.SOCCER, true)
 	require.Nil(t, err)
 
 	err = prepareEvent.IsValid()
