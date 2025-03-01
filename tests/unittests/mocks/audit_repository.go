@@ -2,7 +2,7 @@
 // Source: internal/infrastructure/contracts/audit_logger.go
 
 // Package mock_contracts is a generated GoMock package.
-package mock_repositoty
+package mock_contracts
 
 import (
 	reflect "reflect"
@@ -34,15 +34,15 @@ func (m *MockIAuditLogger) EXPECT() *MockIAuditLoggerMockRecorder {
 }
 
 // LogAction mocks base method.
-func (m *MockIAuditLogger) LogAction(userIdentifier int, eventId, action string, details map[string]interface{}) error {
+func (m *MockIAuditLogger) LogAction(userIdentifier int, action string, eventId *string, details map[string]interface{}) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "LogAction", userIdentifier, eventId, action, details)
+	ret := m.ctrl.Call(m, "LogAction", userIdentifier, action, eventId, details)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // LogAction indicates an expected call of LogAction.
-func (mr *MockIAuditLoggerMockRecorder) LogAction(userIdentifier, eventId, action, details interface{}) *gomock.Call {
+func (mr *MockIAuditLoggerMockRecorder) LogAction(userIdentifier, action, eventId, details interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LogAction", reflect.TypeOf((*MockIAuditLogger)(nil).LogAction), userIdentifier, eventId, action, details)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LogAction", reflect.TypeOf((*MockIAuditLogger)(nil).LogAction), userIdentifier, action, eventId, details)
 }

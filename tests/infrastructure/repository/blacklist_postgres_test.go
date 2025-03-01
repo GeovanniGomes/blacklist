@@ -96,7 +96,7 @@ func TestRemoveBlackList(t *testing.T) {
 	require.Nil(t, err)
 	repositoryBlacklist.AddBlacklist(prepareBlacklist)
 
-	err = repositoryBlacklist.RemoveBlacklist(prepareBlacklist.GetUserIdentifier(), *prepareBlacklist.GetEventId())
+	err = repositoryBlacklist.RemoveBlacklist(prepareBlacklist.GetUserIdentifier(), prepareBlacklist.GetEventId())
 	require.Nil(t, err)
 	blacklist, err := repositoryBlacklist.CheckBlacklist(prepareBlacklist.GetUserIdentifier(), prepareBlacklist.GetEventId())
 

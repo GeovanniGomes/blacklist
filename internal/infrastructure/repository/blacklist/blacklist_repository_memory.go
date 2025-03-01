@@ -38,13 +38,20 @@ func (black_list_repository *BlackListRepositoryMemory) CheckBlacklist(userInden
 	return &entity.BlackList{}, nil
 }
 
-func (black_list_repository *BlackListRepositoryMemory) RemoveBlacklist(userIndentifier int, eventId string) error {
+func (black_list_repository *BlackListRepositoryMemory) RemoveBlacklist(userIndentifier int, eventId *string) error {
 	var newCollection = []entity.BlackList{}
 	for _, blacklist := range black_list_repository.collectionBlacklist {
-		if !(blacklist.GetUserIdentifier() == userIndentifier && blacklist.GetEventId() == &eventId) {
-			newCollection = append(newCollection, blacklist)
-			continue
+		if eventId != nil{
+			if !(blacklist.GetUserIdentifier() == userIndentifier && blacklist.GetEventId() == eventId) {
+				newCollection = append(newCollection, blacklist)
+				continue
+			}
 		}
+		if !(blacklist.GetUserIdentifier() == userIndentifier){
+			newCollection = append(newCollection, blacklist)
+				continue
+		}
+		
 	}
 	black_list_repository.collectionBlacklist = newCollection
 	return nil

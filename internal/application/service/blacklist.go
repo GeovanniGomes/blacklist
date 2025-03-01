@@ -46,7 +46,7 @@ func (s *BlacklistService) AddBlacklist(requestInput interfaces.BlacklistInput) 
 	blockedUntil = nil
 	result, err := s.CheckBlacklist(interfaces.BlacklistInputCheck{
 		UserIdentifier: requestInput.UserIdentifier,
-		EventId:        *requestInput.EventId,
+		EventId:        requestInput.EventId,
 	})
 	if err != nil {
 		return err
@@ -78,11 +78,11 @@ func (s *BlacklistService) AddBlacklist(requestInput interfaces.BlacklistInput) 
 		"reason":        blacklistEntitty.GetReason(),
 		"is_blocked":    true,
 	}
-	err = s.register_audit.LogAction(blacklistEntitty.GetUserIdentifier(), *blacklistEntitty.GetEventId(), contracts.ADD_BLACKLIST, logDetails)
+	err = s.register_audit.LogAction(blacklistEntitty.GetUserIdentifier(), contracts.ADD_BLACKLIST, blacklistEntitty.GetEventId(),logDetails)
 	if err != nil {
 		log.Println(err.Error())
 	}
-	key_cache := s.generate_key_cache(blacklistEntitty.GetUserIdentifier(), *blacklistEntitty.GetEventId())
+	key_cache := s.generate_key_cache(blacklistEntitty.GetUserIdentifier(), blacklistEntitty.GetEventId())
 	err = s.persistence_cache.SetCache(ctx, key_cache, logDetails, nil)
 	log.Println(fmt.Printf("result action set cache %v", err))
 
@@ -113,14 +113,14 @@ func (s *BlacklistService) CheckBlacklist(requestInput interfaces.BlacklistInput
 			"is_blocked":    is_blocked,
 		}
 
-		err := s.register_audit.LogAction(userIdentifier, eventId, contracts.CHECK_BLACKLIST, logDetails)
+		err := s.register_audit.LogAction(userIdentifier, contracts.CHECK_BLACKLIST, eventId,logDetails)
 		if err != nil {
 			log.Println(err.Error())
 		}
 		return interfaces.BlacklistOutputCheck{IsBlocked: is_blocked, Reason: reason}, nil
 	}
 
-	reason, err := s.usecaseCheckBlacklist.Execute(userIdentifier, &eventId)
+	reason, err := s.usecaseCheckBlacklist.Execute(userIdentifier, eventId)
 
 	if err != nil {
 		return interfaces.BlacklistOutputCheck{}, err
@@ -134,7 +134,6 @@ func (s *BlacklistService) CheckBlacklist(requestInput interfaces.BlacklistInput
 
 func (s *BlacklistService) RemoveBlacklist(requestInput interfaces.BlacklistInputRemove) error {
 	userIdentifier, eventId := requestInput.UserIdentifier, requestInput.EventId
-
 	log.Printf("Start remove blacklist witth data: %v %v", userIdentifier, eventId)
 	ctx := context.Background()
 	key_cache := s.generate_key_cache(userIdentifier, eventId)
@@ -151,8 +150,13 @@ func (s *BlacklistService) RemoveBlacklist(requestInput interfaces.BlacklistInpu
 
 }
 
-func (s *BlacklistService) generate_key_cache(userIdentifier int, eventId string) string {
-	return fmt.Sprintf("%v_%v", userIdentifier, eventId)
+func (s *BlacklistService) generate_key_cache(userIdentifier int, eventId *string) string {
+	key_default :=  fmt.Sprintf("%v", userIdentifier)
+
+	if eventId != nil {
+		key_default += fmt.Sprintf("_%s", *eventId)
+	}
+	return key_default
 }
 
 func (s *BlacklistService) SendGenerateReport(startDate, endDate time.Time) {

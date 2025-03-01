@@ -20,7 +20,7 @@ func NewDBAuditLogger(persistence contracts.IDatabaseRelational) *AuditLoggerRep
 	return &AuditLoggerRepository{persistence: persistence}
 }
 
-func (a *AuditLoggerRepository) LogAction(userIdentifier int, eventId, action string, details map[string]interface{}) error {
+func (a *AuditLoggerRepository) LogAction(userIdentifier int, action string, eventId *string, details map[string]interface{}) error {
 	a.mutex.Lock()
 	defer a.mutex.Unlock()
 	detailsJSON, err := json.Marshal(details)

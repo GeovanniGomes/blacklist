@@ -92,7 +92,7 @@ func TestCheckBlackListService(t *testing.T) {
 
 	requestInputCheck := interfaces.BlacklistInputCheck{
 		UserIdentifier: userIdentifier,
-		EventId:        eventId,
+		EventId:        &eventId,
 	}
 	result, err := blacklitervice.CheckBlacklist(requestInputCheck)
 	require.Nil(t, err)
@@ -122,7 +122,7 @@ func TestRemokBlackListService(t *testing.T) {
 
 	requestInputRemove := interfaces.BlacklistInputRemove{
 		UserIdentifier: userIdentifier,
-		EventId:        eventId,
+		EventId:        &eventId,
 	}
 	err = blacklitervice.RemoveBlacklist(requestInputRemove)
 	require.Nil(t, err)

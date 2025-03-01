@@ -144,16 +144,27 @@ func (b *BlackListRepositoryPostgres) CheckBlacklist(userIdentifier int, eventId
 	return &blacklists[0], nil
 }
 
-func (b *BlackListRepositoryPostgres) RemoveBlacklist(userIdentifier int, eventId string) error {
+func (b *BlackListRepositoryPostgres) RemoveBlacklist(userIdentifier int, eventId *string) error {
 	b.mutex.Lock()
 	defer b.mutex.Unlock()
+	defaultQuery := "user_identifier = $2"
 
+	if eventId !=nil{
+		defaultQuery += " AND event_id = $3"
+		return b.persistence.UpdateData(
+			"blacklist",
+			[]string{"is_active"},
+			[]interface{}{false},
+			defaultQuery,
+			userIdentifier, eventId,
+		)
+	}
 	return b.persistence.UpdateData(
 		"blacklist",
 		[]string{"is_active"},
 		[]interface{}{false},
-		"user_identifier = $2 AND event_id = $3",
-		userIdentifier, eventId,
+		defaultQuery,
+		userIdentifier,
 	)
 }
 

@@ -63,7 +63,7 @@ func createTableAudit(db *sql.DB) {
 	createTableSQL := `
 	CREATE TABLE IF NOT EXISTS auditlog (
 		id TEXT PRIMARY KEY,
-		event_id TEXT NOT NULL,
+		event_id TEXT NULL,
 		created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 		user_identifier INT NOT NULL,
 		action TEXT NOT NULL,

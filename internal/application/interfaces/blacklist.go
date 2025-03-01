@@ -1,7 +1,7 @@
 package interfaces
 
 type BlacklistInput struct {
-	EventId        *string          `json:"event_id" binding:"required"`
+	EventId        *string         `json:"event_id"`
 	Reason         string          `json:"reason" binding:"required"`
 	Document       string          `json:"document" binding:"required"`
 	UserIdentifier int             `json:"user_identifier" binding:"required"`
@@ -15,11 +15,11 @@ type BlacklistOutputCheck struct {
 
 type BlacklistInputCheck struct {
 	UserIdentifier int    `json:"user_identifier" binding:"required"`
-	EventId        string `json:"event_id" binding:"required"`
+	EventId        *string `json:"event_id"`
 }
 type BlacklistInputRemove struct {
 	UserIdentifier int    `json:"user_identifier" binding:"required"`
-	EventId        string `json:"event_id" binding:"required"`
+	EventId        *string `json:"event_id"`
 }
 
 type BlacklistInputReport struct {

@@ -2,6 +2,7 @@ package http
 
 import (
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/GeovanniGomes/blacklist/internal/application/interfaces"
@@ -49,11 +50,25 @@ func (h *BlackListHanhler) addToBlacklist(c *gin.Context) {
 }
 
 func (h *BlackListHanhler) checkBlacklist(c *gin.Context) {
-	var entry interfaces.BlacklistInputCheck
-	if err := c.ShouldBindJSON(&entry); err != nil {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
+	queryUserIdentifier := c.Query("user_identifier")
+	eventID := c.Query("event_id")
+
+	if queryUserIdentifier == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "parameters user_identifier"})
 		return
 	}
+	userIdentifier, err := strconv.Atoi(queryUserIdentifier)
+
+	if err != nil{
+		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": "field user_identifier not integer valilid"})
+	}
+
+	entry := interfaces.BlacklistInputCheck{
+		UserIdentifier:  userIdentifier,
+		EventId:        &eventID,
+	}
+
+
 	resultOutput, err := h.serviceBlacklist.CheckBlacklist(entry)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

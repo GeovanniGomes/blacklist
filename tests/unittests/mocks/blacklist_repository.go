@@ -2,7 +2,7 @@
 // Source: internal/application/contracts/repository/blacklist_interface.go
 
 // Package mock_repositoty is a generated GoMock package.
-package mock_repositoty
+package mock_contracts
 
 import (
 	reflect "reflect"
@@ -109,7 +109,7 @@ func (mr *MockIBlackListRepositoryMockRecorder) GetEvent(id interface{}) *gomock
 }
 
 // RemoveBlacklist mocks base method.
-func (m *MockIBlackListRepository) RemoveBlacklist(userIndentifier int, eventId string) error {
+func (m *MockIBlackListRepository) RemoveBlacklist(userIndentifier int, eventId *string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "RemoveBlacklist", userIndentifier, eventId)
 	ret0, _ := ret[0].(error)

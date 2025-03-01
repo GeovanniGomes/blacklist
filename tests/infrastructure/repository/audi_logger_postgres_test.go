@@ -29,7 +29,7 @@ func TestAddLogger(t *testing.T){
 		"blocked_type":  prepareBlacklist.GetBlockedType(),
 		"blocked_until": prepareBlacklist.GetBlockedUntil(),
 	}
-	repositoryBlacklist.LogAction(10,uuid.NewV4().String(),"add blacklist", logDetails)
+	repositoryBlacklist.LogAction(10,"add blacklist", &eventId,logDetails)
 
 	rows, err := interface_database.SelectQuery("SELECT reason FROM blacklist WHERE id = $1", prepareBlacklist.GetId())
 	require.Nil(t, err)

@@ -17,7 +17,8 @@ func TestRemoveBlacklist(t *testing.T) {
 	mockCheckBlacklist.EXPECT().RemoveBlacklist(gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
 
 	usecase := new_black_list_usecase.NewRemoveBlacklist(mockCheckBlacklist)
-	err := usecase.Execute(10, "event_id")
+	eventId := "event_id"
+	err := usecase.Execute(10, &eventId)
 
 	if err != nil {
 		t.Errorf("Expected err nil, got %v", err)

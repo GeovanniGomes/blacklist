@@ -22,6 +22,6 @@ func TestRemoveBlackList(t *testing.T) {
 	_, err = usecaseAddBacklist.Execute(10, &eventIdTwo, "Fraude no cartao", "10101010101", nil)
 	require.Nil(t, err)
 
-	err = usecaseRemoveBacklist.Execute(blacklistEntity.GetUserIdentifier(), *blacklistEntity.GetEventId())
+	err = usecaseRemoveBacklist.Execute(blacklistEntity.GetUserIdentifier(), blacklistEntity.GetEventId())
 	require.Nil(t, err)
 }
